@@ -45,6 +45,8 @@ public:
 
     struct superblock sb;
 
+    void overwrite(unsigned int block_id, const char *buf, int size);
+
     bool check_free_and_alloc(uint32_t id);
 
     bool check_free_and_free(uint32_t id);

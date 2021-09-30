@@ -131,7 +131,6 @@ int test_indirect()
                 printf("error get, return not OK\n");
                 return 2;
             }
-            std::cout << "content size: " << content[i].size() << std::endl;
             if (buf.compare(content[i]) != 0) {
                 std::cout << "error get large file, not consistent with put large file : " << 
                     buf << " <-> " << content[i] << "\n";

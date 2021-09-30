@@ -48,9 +48,7 @@ int extent_server::get(extent_protocol::extentid_t id, std::string &buf)
   if (size == 0)
     buf = "";
   else {
-//      std::cout << "cbuf: " << cbuf << std::endl;
     buf.assign(cbuf, size);
-//      std::cout <<"our" << std::endl;
     free(cbuf);
   }
 

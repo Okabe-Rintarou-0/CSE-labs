@@ -102,6 +102,14 @@ block_manager::block_manager() {
 }
 
 void
+block_manager::overwrite(unsigned int block_id, const char *buf, int size) {
+    char block[BLOCK_SIZE];
+    memset(block, 0, BLOCK_SIZE);
+    memcpy(block, buf, size);
+    write_block(block_id, block);
+}
+
+void
 block_manager::read_block(uint32_t id, char *buf) {
     d->read_block(id, buf);
 }
@@ -132,7 +140,6 @@ inode_manager::alloc_inode(uint32_t type) {
      * the 1st is used for root_dir, see inode_manager::inode_manager().
      */
     for (int i = 1; i <= INODE_NUM; ++i) {
-//    std::cout << "iid: " << iid << std::endl;
         inode *_inode = get_inode(i);
         if (_inode == nullptr) {
             _inode = (inode *) malloc(sizeof(inode));
@@ -223,7 +230,7 @@ inode_manager::read_file(uint32_t inum, char **buf_out, int *size) {
     inode *_inode = get_inode(inum);
     if (_inode == nullptr) return;
     *size = _inode->size;
-    std::cout << "Read file size: " << *size << std::endl;
+
     // calc direct block size
     unsigned int direct_block_size = *size <= NDIRECT * BLOCK_SIZE ? *size : NDIRECT * BLOCK_SIZE;
     unsigned int n_direct_blocks =
@@ -240,43 +247,37 @@ inode_manager::read_file(uint32_t inum, char **buf_out, int *size) {
     for (i = 0; i < n_direct_blocks; ++i) {
         // direct block, so directly get the block id
         unsigned int block_id = _inode->blocks[i];
+
         // read block to buf_out[i]
         unsigned int written_size = rest_size > BLOCK_SIZE ? BLOCK_SIZE : rest_size;
         this->bm->read_block(block_id, block);
         memcpy(*buf_out + i * BLOCK_SIZE, block, written_size);
         rest_size -= written_size;
-//    std::cout << "Read: " << *buf_out << std::endl;
     }
-    std::cout << "Read n_total: " << n_total << std::endl;
+//    std::cout << "Read n_total: " << n_total << std::endl;
     // if exists indirect block
     if (n_total > n_direct_blocks) {
         // get the indirect block
         unsigned int indirect_block_id = _inode->blocks[NDIRECT];
-//    std::cout << "Read indirect_block_id: " << indirect_block_id << std::endl;
         char indirect_block[BLOCK_SIZE];
         this->bm->read_block(indirect_block_id, indirect_block);
 
         // calc how many direct blocks
         unsigned int indirect_block_size = *size - direct_block_size;
         rest_size = indirect_block_size;
-        unsigned int n_temp = n_direct_blocks;
-        n_direct_blocks =
-                indirect_block_size % BLOCK_SIZE ? indirect_block_size / BLOCK_SIZE + 1 : indirect_block_size /
-                                                                                          BLOCK_SIZE;
 
         // alloc direct blocks that the indirect block links to
         for (; i < n_total; ++i) {
             // read 4 bytes each, transform to block id.
             // then read from the corresponding block.
             unsigned int written_size = rest_size > BLOCK_SIZE ? BLOCK_SIZE : rest_size;
-            unsigned int block_id = read_block_id(&indirect_block[4 * (i - n_temp)]);
-            std::cout << "Read block id: " << block_id << std::endl;
+            unsigned int block_id = read_block_id(&indirect_block[4 * (i - n_direct_blocks)]);
+//            std::cout << "Read block id: " << block_id << std::endl;
             this->bm->read_block(block_id, block);
             memcpy(*buf_out + i * BLOCK_SIZE, block, written_size);
             rest_size -= written_size;
         }
     }
-//  std::cout << "Read: " << *buf_out << std::endl;
     free(_inode);
     /// TODO: do remember that the caller of this method should delete allocated objects.
     return;
@@ -342,16 +343,13 @@ inode_manager::write_file(uint32_t inum, const char *buf, int size) {
     unsigned int written_size;
     unsigned int i;
     unsigned int direct_block_id;
-    char block[BLOCK_SIZE];
 
     // alloc direct blocks
     for (i = 0; i < n_direct_blocks; ++i) {
         written_size = rest_size > BLOCK_SIZE ? BLOCK_SIZE : rest_size;
         // make use of the allocated blocks
         if ((direct_block_id = _inode->blocks[i]) > 0) {
-            memset(block, 0, BLOCK_SIZE);
-            memcpy(block, buf + i * BLOCK_SIZE, written_size);
-            this->bm->write_block(direct_block_id, block);
+            this->bm->overwrite(direct_block_id, buf + i * BLOCK_SIZE, written_size);
         } else
             _inode->blocks[i] = this->bm->alloc_and_write(buf + i * BLOCK_SIZE, written_size);
         rest_size -= written_size;
@@ -369,17 +367,21 @@ inode_manager::write_file(uint32_t inum, const char *buf, int size) {
 
         // calc the number of direct blocks that the indirect block links to
         n_direct_blocks = indirect_size % BLOCK_SIZE ? indirect_size / BLOCK_SIZE + 1 : indirect_size / BLOCK_SIZE;
-//    std::cout << "wt n_direct_blocks: " << n_direct_blocks << std::endl;
+
         char indirect_block[BLOCK_SIZE];
         this->bm->read_block(indirect_block_id, indirect_block);
         rest_size = indirect_size;
         for (unsigned int i = 0; i < n_direct_blocks; ++i) {
-            unsigned int written_size = rest_size > BLOCK_SIZE ? BLOCK_SIZE : rest_size;
-            unsigned int block_id = this->bm->alloc_and_write(buf + (NDIRECT + i) * BLOCK_SIZE, written_size);
-            // write block id into the indirect block
-            // four byte each. so i * 4
-            write_block_id(&indirect_block[i * 4], block_id);
-//      std::cout << "after write: " << *((int *)&indirect_block[i * 4]) << std::endl;
+            written_size = rest_size > BLOCK_SIZE ? BLOCK_SIZE : rest_size;
+            direct_block_id = read_block_id(&indirect_block[i * 4]);
+            if (direct_block_id) {
+                this->bm->overwrite(direct_block_id, buf + (NDIRECT + i) * BLOCK_SIZE, written_size);
+            } else {
+                direct_block_id = this->bm->alloc_and_write(buf + (NDIRECT + i) * BLOCK_SIZE, written_size);
+                // write block id into the indirect block
+                // four byte each. so i * 4
+                write_block_id(&indirect_block[i * 4], direct_block_id);
+            }
         }
         this->bm->write_block(indirect_block_id, indirect_block);
     }
