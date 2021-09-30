@@ -4,6 +4,7 @@
 #define inode_h
 
 #include <stdint.h>
+#include <queue>
 #include "extent_protocol.h" // TODO: delete it
 
 #define DISK_SIZE  1024*1024*16
@@ -15,38 +16,48 @@ typedef uint32_t blockid_t;
 // disk layer -----------------------------------------
 
 class disk {
- private:
-  unsigned char blocks[BLOCK_NUM][BLOCK_SIZE];
+private:
+    unsigned char blocks[BLOCK_NUM][BLOCK_SIZE];
 
- public:
-  disk();
-  void read_block(uint32_t id, char *buf);
-  void write_block(uint32_t id, const char *buf);
+public:
+    disk();
+
+    void read_block(uint32_t id, char *buf);
+
+    void write_block(uint32_t id, const char *buf);
 };
 
 // block layer -----------------------------------------
 
 typedef struct superblock {
-  uint32_t size;
-  uint32_t nblocks;
-  uint32_t ninodes;
+    uint32_t size;
+    uint32_t nblocks;
+    uint32_t ninodes;
 } superblock_t;
 
 class block_manager {
- private:
-  disk *d;
-  std::map <uint32_t, int> using_blocks;
+private:
+    disk *d;
+    std::map<uint32_t, int> using_blocks;
+    std::queue <uint32_t> free_queue;
 public:
-  block_manager();
-  struct superblock sb;
+    block_manager();
 
-  bool check_free_and_alloc(uint32_t id);
-  bool check_free_and_free(uint32_t id);
-  uint32_t alloc_block();
-  void free_block(uint32_t id);
-  void read_block(uint32_t id, char *buf);
-  uint32_t alloc_and_write(const char *buf, int size);
-  void write_block(uint32_t id, const char *buf);
+    struct superblock sb;
+
+    bool check_free_and_alloc(uint32_t id);
+
+    bool check_free_and_free(uint32_t id);
+
+    uint32_t alloc_block();
+
+    void free_block(uint32_t id);
+
+    void read_block(uint32_t id, char *buf);
+
+    uint32_t alloc_and_write(const char *buf, int size);
+
+    void write_block(uint32_t id, const char *buf);
 };
 
 // inode layer -----------------------------------------
@@ -74,31 +85,42 @@ public:
 #define MAXFILE (NDIRECT + NINDIRECT)
 
 typedef struct inode {
-  short type;
-  unsigned int size;
-  unsigned int atime;
-  unsigned int mtime;
-  unsigned int ctime;
-  blockid_t blocks[NDIRECT+1];   // Data block addresses
+    short type;
+    unsigned int size;
+    unsigned int atime;
+    unsigned int mtime;
+    unsigned int ctime;
+    blockid_t blocks[NDIRECT + 1];   // Data block addresses
 } inode_t;
 
 class inode_manager {
- private:
-  block_manager *bm;
-  struct inode* get_inode(uint32_t inum);
-  void put_inode(uint32_t inum, struct inode *ino);
+private:
+    block_manager *bm;
 
-  unsigned int read_block_id(char *x);
-  void write_block_id(char *x, unsigned int id);
+    struct inode *get_inode(uint32_t inum);
 
- public:
-  inode_manager();
-  uint32_t alloc_inode(uint32_t type);
-  void free_inode(uint32_t inum);
-  void read_file(uint32_t inum, char **buf, int *size);
-  void write_file(uint32_t inum, const char *buf, int size);
-  void remove_file(uint32_t inum);
-  void getattr(uint32_t inum, extent_protocol::attr &a);
+    void put_inode(uint32_t inum, struct inode *ino);
+
+    unsigned int read_block_id(char *x);
+
+    void write_block_id(char *x, unsigned int id);
+
+    void free_indirect(unsigned int indirect_block_id);
+
+public:
+    inode_manager();
+
+    uint32_t alloc_inode(uint32_t type);
+
+    void free_inode(uint32_t inum);
+
+    void read_file(uint32_t inum, char **buf, int *size);
+
+    void write_file(uint32_t inum, const char *buf, int size);
+
+    void remove_file(uint32_t inum);
+
+    void getattr(uint32_t inum, extent_protocol::attr &a);
 };
 
 #endif

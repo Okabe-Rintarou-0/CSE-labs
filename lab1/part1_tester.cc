@@ -131,6 +131,7 @@ int test_indirect()
                 printf("error get, return not OK\n");
                 return 2;
             }
+            std::cout << "content size: " << content[i].size() << std::endl;
             if (buf.compare(content[i]) != 0) {
                 std::cout << "error get large file, not consistent with put large file : " << 
                     buf << " <-> " << content[i] << "\n";
@@ -241,7 +242,7 @@ int main(int argc, char *argv[])
         printf("Usage: ./part1_tester\n");
         return 1;
     }
-  
+
     ec = new extent_client();
 
     if (test_create_and_getattr() != 0)
