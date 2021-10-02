@@ -1,1 +1,1492 @@
-./start.sh: line 11: ./chfs_client: No such file or directory
+	im: inode not exist
+FUSE library version: 2.9.9
+unique: 2, opcode: INIT (26), nodeid: 0, insize: 56, pid: 0
+INIT: 7.33
+flags=0x13fffffb
+max_readahead=0x00020000
+   INIT: 7.19
+   flags=0x00000000
+   max_readahead=0x00020000
+   max_write=0x00020000
+   max_background=0
+   congestion_threshold=0
+   unique: 2, success, outsize: 40
+unique: 4, opcode: ACCESS (34), nodeid: 1, insize: 48, pid: 2297
+   unique: 4, error: -38 (Function not implemented), outsize: 16
+unique: 6, opcode: LOOKUP (1), nodeid: 1, insize: 47, pid: 2297
+   unique: 6, error: -2 (No such file or directory), outsize: 16
+unique: 8, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 8, success, outsize: 32
+unique: 10, opcode: LOOKUP (1), nodeid: 1, insize: 52, pid: 2297
+   unique: 10, error: -2 (No such file or directory), outsize: 16
+unique: 12, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 12, success, outsize: 120
+unique: 14, opcode: LOOKUP (1), nodeid: 1, insize: 57, pid: 4208
+   unique: 14, error: -2 (No such file or directory), outsize: 16
+unique: 16, opcode: LOOKUP (1), nodeid: 1, insize: 52, pid: 4207
+   unique: 16, error: -2 (No such file or directory), outsize: 16
+unique: 18, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 18, success, outsize: 16
+unique: 20, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 20, success, outsize: 16
+unique: 22, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 22, success, outsize: 32
+unique: 24, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 24, success, outsize: 120
+unique: 26, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 26, success, outsize: 16
+unique: 28, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 28, success, outsize: 16
+unique: 30, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 30, success, outsize: 32
+unique: 32, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 32, success, outsize: 120
+unique: 34, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 34, success, outsize: 16
+unique: 36, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 36, success, outsize: 16
+unique: 38, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 38, success, outsize: 32
+unique: 40, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 40, success, outsize: 120
+unique: 42, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 42, success, outsize: 16
+unique: 44, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 44, success, outsize: 16
+unique: 46, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 46, success, outsize: 32
+unique: 48, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 48, success, outsize: 120
+unique: 50, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 50, success, outsize: 16
+unique: 52, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 52, success, outsize: 16
+unique: 54, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 54, success, outsize: 32
+unique: 56, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 56, success, outsize: 120
+unique: 58, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 58, success, outsize: 16
+unique: 60, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 60, success, outsize: 16
+unique: 62, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 62, success, outsize: 32
+unique: 64, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 64, success, outsize: 120
+unique: 66, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 66, success, outsize: 16
+unique: 68, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 68, success, outsize: 16
+unique: 70, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 70, success, outsize: 32
+unique: 72, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 72, success, outsize: 120
+unique: 74, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 74, success, outsize: 16
+unique: 76, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 76, success, outsize: 16
+unique: 78, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 78, success, outsize: 32
+unique: 80, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 80, success, outsize: 120
+unique: 82, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 82, success, outsize: 16
+unique: 84, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 84, success, outsize: 16
+unique: 86, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 86, success, outsize: 32
+unique: 88, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 88, success, outsize: 120
+unique: 90, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 90, success, outsize: 16
+unique: 92, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 92, success, outsize: 16
+unique: 94, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 94, success, outsize: 32
+unique: 96, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 96, success, outsize: 120
+unique: 98, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 98, success, outsize: 16
+unique: 100, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 100, success, outsize: 16
+unique: 102, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 102, success, outsize: 32
+unique: 104, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 104, success, outsize: 120
+unique: 106, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 106, success, outsize: 16
+unique: 108, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 108, success, outsize: 16
+unique: 110, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 110, success, outsize: 32
+unique: 112, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 112, success, outsize: 120
+unique: 114, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 114, success, outsize: 16
+unique: 116, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 116, success, outsize: 16
+unique: 118, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 118, success, outsize: 32
+unique: 120, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 120, success, outsize: 120
+unique: 122, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 122, success, outsize: 16
+unique: 124, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 124, success, outsize: 16
+unique: 126, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 126, success, outsize: 32
+unique: 128, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 128, success, outsize: 120
+unique: 130, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 130, success, outsize: 16
+unique: 132, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 132, success, outsize: 16
+unique: 134, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 134, success, outsize: 32
+unique: 136, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 136, success, outsize: 120
+unique: 138, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 138, success, outsize: 16
+unique: 140, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 140, success, outsize: 16
+unique: 142, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 142, success, outsize: 32
+unique: 144, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 144, success, outsize: 120
+unique: 146, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 146, success, outsize: 16
+unique: 148, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 148, success, outsize: 16
+unique: 150, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 150, success, outsize: 32
+unique: 152, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 152, success, outsize: 120
+unique: 154, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 154, success, outsize: 16
+unique: 156, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 156, success, outsize: 16
+unique: 158, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 158, success, outsize: 32
+unique: 160, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 160, success, outsize: 120
+unique: 162, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 162, success, outsize: 16
+unique: 164, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 164, success, outsize: 16
+unique: 166, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 166, success, outsize: 32
+unique: 168, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 168, success, outsize: 120
+unique: 170, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 170, success, outsize: 16
+unique: 172, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 172, success, outsize: 16
+unique: 174, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 174, success, outsize: 32
+unique: 176, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 176, success, outsize: 120
+unique: 178, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 178, success, outsize: 16
+unique: 180, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 180, success, outsize: 16
+unique: 182, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 182, success, outsize: 32
+unique: 184, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 184, success, outsize: 120
+unique: 186, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 186, success, outsize: 16
+unique: 188, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 188, success, outsize: 16
+unique: 190, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 190, success, outsize: 32
+unique: 192, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 192, success, outsize: 120
+unique: 194, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 194, success, outsize: 16
+unique: 196, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 196, success, outsize: 16
+unique: 198, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 198, success, outsize: 32
+unique: 200, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 200, success, outsize: 120
+unique: 202, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 202, success, outsize: 16
+unique: 204, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 204, success, outsize: 16
+unique: 206, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 1889
+   unique: 206, success, outsize: 32
+unique: 208, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 1889
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 208, success, outsize: 120
+unique: 210, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 1889
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 210, success, outsize: 16
+unique: 212, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 212, success, outsize: 16
+unique: 214, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 4208
+   unique: 214, success, outsize: 32
+unique: 216, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4208
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 216, success, outsize: 120
+unique: 218, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 4207
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 218, success, outsize: 16
+unique: 220, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 220, success, outsize: 16
+unique: 222, opcode: LOOKUP (1), nodeid: 1, insize: 52, pid: 4208
+   unique: 222, error: -2 (No such file or directory), outsize: 16
+unique: 224, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4185
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 224, success, outsize: 120
+unique: 226, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 4185
+   unique: 226, success, outsize: 32
+unique: 228, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4185
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 228, success, outsize: 120
+unique: 230, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 4185
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 230, success, outsize: 16
+unique: 232, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 232, success, outsize: 16
+unique: 234, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4185
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 234, success, outsize: 120
+unique: 236, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4171
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 236, success, outsize: 120
+unique: 238, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4185
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 238, success, outsize: 120
+unique: 240, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 2784
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 240, success, outsize: 120
+unique: 242, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 2784
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 242, success, outsize: 120
+unique: 244, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 2784
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 244, success, outsize: 120
+unique: 246, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 2784
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 246, success, outsize: 120
+unique: 248, opcode: LOOKUP (1), nodeid: 1, insize: 98, pid: 4234
+   unique: 248, error: -2 (No such file or directory), outsize: 16
+unique: 250, opcode: CREATE (35), nodeid: 1, insize: 114, pid: 4234
+extent_server: getattr 94632866977648
+	im: inum out of range
+isfile: 94632866977648 is a dir
+getattr 000056116e6b9770 0
+extent_server: getattr 94632866977648
+	im: inum out of range
+isfile: 94632866977648 is a dir
+getdir 000056116e6b9770
+extent_server: getattr 94632866977648
+	im: inum out of range
+   getattr -> 0 0 0
+   unique: 250, success, outsize: 160
+OK: create returns.
+unique: 252, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4185
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 252, success, outsize: 120
+unique: 254, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4245
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 254, success, outsize: 120
+unique: 256, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4245
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 256, success, outsize: 120
+unique: 258, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4261
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 258, success, outsize: 120
+unique: 260, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4272
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 260, success, outsize: 120
+unique: 262, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4374
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 262, success, outsize: 120
+unique: 264, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4735
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 264, success, outsize: 120
+unique: 266, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5134
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 266, success, outsize: 120
+unique: 268, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5134
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 268, success, outsize: 120
+unique: 270, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4981
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 270, success, outsize: 120
+unique: 272, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5155
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 272, success, outsize: 120
+unique: 274, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5134
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 274, success, outsize: 120
+unique: 276, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 4981
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 276, success, outsize: 120
+unique: 278, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5203
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 278, success, outsize: 120
+unique: 280, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5340
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 280, success, outsize: 120
+unique: 282, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5330
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 282, success, outsize: 120
+unique: 284, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5330
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 284, success, outsize: 120
+unique: 286, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5330
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 286, success, outsize: 120
+unique: 288, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5848
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 288, success, outsize: 120
+unique: 290, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6009
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 290, success, outsize: 120
+unique: 292, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6011
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 292, success, outsize: 120
+unique: 294, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6010
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 294, success, outsize: 120
+unique: 296, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6010
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 296, success, outsize: 120
+unique: 298, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6011
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 298, success, outsize: 120
+unique: 300, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5848
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 300, success, outsize: 120
+unique: 302, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5848
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 302, success, outsize: 120
+unique: 304, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6011
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 304, success, outsize: 120
+unique: 306, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5848
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 306, success, outsize: 120
+unique: 308, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6011
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 308, success, outsize: 120
+unique: 310, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6010
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 310, success, outsize: 120
+unique: 312, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6011
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 312, success, outsize: 120
+unique: 314, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6177
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 314, success, outsize: 120
+unique: 316, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6267
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 316, success, outsize: 120
+unique: 318, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6267
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 318, success, outsize: 120
+unique: 320, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6261
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 320, success, outsize: 120
+unique: 322, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6267
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 322, success, outsize: 120
+unique: 324, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6011
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 324, success, outsize: 120
+unique: 326, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 5848
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 326, success, outsize: 120
+unique: 328, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6391
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 328, success, outsize: 120
+unique: 330, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6011
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 330, success, outsize: 120
+unique: 332, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6394
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 332, success, outsize: 120
+unique: 334, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6011
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 334, success, outsize: 120
+unique: 336, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6394
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 336, success, outsize: 120
+unique: 338, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6442
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 338, success, outsize: 120
+unique: 340, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6394
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 340, success, outsize: 120
+unique: 342, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6465
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 342, success, outsize: 120
+unique: 344, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6465
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 344, success, outsize: 120
+unique: 346, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6661
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 346, success, outsize: 120
+unique: 348, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6784
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 348, success, outsize: 120
+unique: 350, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6784
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 350, success, outsize: 120
+unique: 352, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6782
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 352, success, outsize: 120
+unique: 354, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6750
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 354, success, outsize: 120
+unique: 356, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6782
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 356, success, outsize: 120
+unique: 358, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6782
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 358, success, outsize: 120
+unique: 360, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6856
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 360, success, outsize: 120
+unique: 362, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6827
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 362, success, outsize: 120
+unique: 364, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6782
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 364, success, outsize: 120
+unique: 366, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6827
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 366, success, outsize: 120
+unique: 368, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6750
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 368, success, outsize: 120
+unique: 370, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6750
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 370, success, outsize: 120
+unique: 372, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6782
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 372, success, outsize: 120
+unique: 374, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6782
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 374, success, outsize: 120
+unique: 376, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6750
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 376, success, outsize: 120
+unique: 378, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7040
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 378, success, outsize: 120
+unique: 380, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7045
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 380, success, outsize: 120
+unique: 382, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7048
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 382, success, outsize: 120
+unique: 384, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 7045
+   unique: 384, success, outsize: 32
+unique: 386, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7045
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 386, success, outsize: 120
+unique: 388, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 7048
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 388, success, outsize: 16
+unique: 390, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 390, success, outsize: 16
+unique: 392, opcode: STATFS (17), nodeid: 1, insize: 40, pid: 7050
+statfs
+   unique: 392, success, outsize: 96
+unique: 394, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7050
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 394, success, outsize: 120
+unique: 396, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7052
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 396, success, outsize: 120
+unique: 398, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 6750
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 398, success, outsize: 120
+unique: 400, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7052
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 400, success, outsize: 120
+unique: 402, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7093
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 402, success, outsize: 120
+unique: 404, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7052
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 404, success, outsize: 120
+unique: 406, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 7052
+   unique: 406, success, outsize: 32
+unique: 408, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7052
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 408, success, outsize: 120
+unique: 410, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 7052
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 410, success, outsize: 16
+unique: 412, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 412, success, outsize: 16
+unique: 414, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7052
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 414, success, outsize: 120
+unique: 416, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7052
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 416, success, outsize: 120
+unique: 418, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7052
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 418, success, outsize: 120
+unique: 420, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 7052
+   unique: 420, success, outsize: 32
+unique: 422, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7052
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 422, success, outsize: 120
+unique: 424, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 424, success, outsize: 16
+unique: 426, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7052
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 426, success, outsize: 120
+unique: 428, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7052
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 428, success, outsize: 120
+unique: 430, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 7052
+   unique: 430, success, outsize: 32
+unique: 432, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7052
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 432, success, outsize: 120
+unique: 434, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 434, success, outsize: 16
+unique: 436, opcode: OPENDIR (27), nodeid: 1, insize: 48, pid: 7052
+   unique: 436, success, outsize: 32
+unique: 438, opcode: GETATTR (3), nodeid: 1, insize: 56, pid: 7052
+extent_server: getattr 1
+isfile: 1 is a dir
+getattr 0000000000000001 0
+extent_server: getattr 1
+isfile: 1 is a dir
+getdir 0000000000000001
+extent_server: getattr 1
+   getattr -> 0 0 0
+   unique: 438, success, outsize: 120
+unique: 440, opcode: READDIR (28), nodeid: 1, insize: 80, pid: 7052
+fuseserver_readdir
+extent_server: getattr 1
+isfile: 1 is a dir
+   unique: 440, success, outsize: 16
+unique: 442, opcode: RELEASEDIR (29), nodeid: 1, insize: 64, pid: 0
+   unique: 442, success, outsize: 16

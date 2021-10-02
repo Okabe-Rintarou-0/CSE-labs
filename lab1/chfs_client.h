@@ -27,8 +27,9 @@ class chfs_client {
     unsigned long ctime;
   };
   struct dirent {
-    std::string name;
     chfs_client::inum inum;
+    uint16_t entry_len;
+    std::string name;
   };
 
  private:
@@ -53,6 +54,11 @@ class chfs_client {
   int read(inum, size_t, off_t, std::string &);
   int unlink(inum,const char *);
   int mkdir(inum , const char *, mode_t , inum &);
+
+  // my func
+  void write_entry(char *, dirent *);
+  void construct_entry(inum i, dirent &, const char *);
+  void modify_dire_content(dirent *, std::string &content);
   
   /** you may need to add symbolic link related methods here.*/
 };
