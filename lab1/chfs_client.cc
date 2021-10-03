@@ -9,9 +9,20 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define ROUND_UP(x) (x + 3) & ~3
+#define ROUND_UP(x) ((x + 3) & ~3)
 
 #define INVARIABLE_SIZE (sizeof(char) + sizeof(inum) + sizeof(uint16_t))
+
+std::ostream &operator<<(std::ostream &os, const chfs_client::dirent &entry) {
+    return os
+            << "----------------------------------------" << std::endl
+            << "Entry info: " << std::endl
+            << "inum: " << entry.inum << std::endl
+            << "entry_len: " << entry.entry_len << std::endl
+            << "name_len: " << (int) entry.name_len << std::endl
+            << "name: " << entry.name << std::endl
+            << "----------------------------------------";
+}
 
 chfs_client::chfs_client() {
     ec = new extent_client();
@@ -24,6 +35,21 @@ chfs_client::chfs_client(std::string extent_dst, std::string lock_dst) {
 }
 
 void
+chfs_client::parse_content(std::string &content, std::list <dirent> &entries) {
+    int total_size = content.size();
+    int cursor = 0;
+    while (cursor < total_size) {
+        dirent entry;
+        read_entry(&content[cursor], &entry);
+//        std::cout << "Read entry from content: " << std::endl
+//                  << entry << std::endl;
+
+        entries.push_back(entry);
+        cursor += entry.entry_len;
+    }
+}
+
+void
 chfs_client::write_entry(char *buf, dirent *entry) {
     memset(buf, 0, entry->entry_len);
 
@@ -33,46 +59,59 @@ chfs_client::write_entry(char *buf, dirent *entry) {
     memcpy(buf, &(entry->entry_len), sizeof(uint16_t));
     buf += sizeof(uint16_t);
 
-    char name_len = entry->name.size();
-    memcpy(buf, &name_len, sizeof(char));
+    memcpy(buf, &(entry->name_len), sizeof(char));
     buf += sizeof(char);
 
-    memcpy(buf, entry->name.c_str(), name_len);
+    memcpy(buf, entry->name.c_str(), entry->name_len);
+}
+
+void
+chfs_client::read_entry(char *buf, dirent *entry) {
+    memcpy(&(entry->inum), buf, sizeof(inum));
+    buf += sizeof(inum);
+
+    memcpy(&(entry->entry_len), buf, sizeof(uint16_t));
+    buf += sizeof(uint16_t);
+
+    memcpy(&(entry->name_len), buf, sizeof(char));
+    buf += sizeof(char);
+
+    char name[entry->name_len];
+    memcpy(name, buf, entry->name_len);
+    entry->name.assign(name, entry->name_len);
 }
 
 void chfs_client::construct_entry(inum i, dirent &entry, const char *name) {
     unsigned int name_len = strlen(name);
+//    std::cout << "name = " << name << std::endl;
+//    std::cout << "name_len = " << name_len << std::endl;
+
     const unsigned int supplemented_size = ROUND_UP(name_len);
-    entry.inum = i;
+//    std::cout << "supplemented_size = " << supplemented_size << std::endl;
+//    std::cout << "invariable_size = " << INVARIABLE_SIZE << std::endl;
     char _name[supplemented_size];
     memset(_name, 0, supplemented_size);
     strncpy(_name, name, name_len);
-    entry.name.assign(_name);
+
+    entry.name.assign(_name, name_len);
+    entry.inum = i;
+    entry.name_len = name_len;
     entry.entry_len = INVARIABLE_SIZE + supplemented_size;
 }
 
-void chfs_client::modify_dire_content(dirent *entry, std::string &content) {
-    unsigned int total_size = content.size();
-    unsigned int cursor = 0;
-    bool inserted = false;
-    while (cursor < total_size) {
-        dirent cur_entry = *((dirent *) &content[cursor]);
-        unsigned int real_size = INVARIABLE_SIZE + cur_entry.name.size();
-        unsigned int entry_size = cur_entry.entry_len;
-        unsigned int rest_size = entry_size - real_size;
-        if (rest_size >= entry->entry_len) {
-            write_entry((char *) &content[cursor + real_size], entry);
-            inserted = true;
-            break;
-        }
-        cursor += entry_size;
-    }
-
-    // if not inserted, append
-    if (!inserted) {
-        content.append(std::string(entry->entry_len, 0));
-        write_entry((char *) &content[total_size], entry);
-    }
+void chfs_client::modify_content(std::string &content, dirent *insert) {
+//    for (auto iter = entries.begin(); iter != entries.end(); ++iter) {
+//        dirent entry = *it;
+//        unsigned int entry_len = entry.entry_len;
+//        unsigned int real_len = INVARIABLE_SIZE + entry.name.size();
+//        unsigned int rest_len = entry_len - real_len;
+//        if (real_len >= insert.entry_len) {
+//        }
+//    }
+    // naive: directly append
+    unsigned int org_size = content.size();
+    content.append(std::string(insert->entry_len, 0));
+    write_entry(&content[org_size], insert);
 }
 
 chfs_client::inum
@@ -178,6 +217,21 @@ chfs_client::setattr(inum ino, size_t size) {
      * according to the size (<, =, or >) content length.
      */
 
+    // fetch content of ino
+    std::string content;
+    ec->get(ino, content);
+
+    // modify content
+    // if bigger, append with '\0'.
+    if (size > content.size())
+        content.append(std::string(size - content.size(), 0));
+        // if smaller, truncate to size.
+    else if (size < content.size())
+        content = content.substr(0, size);
+
+    // put ino
+    ec->put(ino, content);
+
     return r;
 }
 
@@ -196,20 +250,24 @@ chfs_client::create(inum parent, const char *name, mode_t mode, inum &ino_out) {
     // if exists, then return EXIST
     if (found) return EXIST;
     // if not found, create new file.
-    inum i;
-    ec->create(extent_protocol::T_FILE, i);
+    std::cout << "No file with same name found" << std::endl;
+
+    ec->create(extent_protocol::T_FILE, ino_out);
+    std::cout << "Create inode for file successfully." << std::endl;
 
     // construct the entry
     dirent entry;
-    construct_entry(i, entry, name);
+    construct_entry(ino_out, entry, name);
+    std::cout << "Construct entry:" << std::endl
+              << entry << std::endl;
 
     // get and modify the content of parent directory
     std::string content;
-    ec->get(i, content);
-    modify_dire_content(&entry, content);
+    ec->get(parent, content);
+    modify_content(content, &entry);
 
     // write back.
-    ec->put(i, content);
+    ec->put(parent, content);
 
     return r;
 }
@@ -229,20 +287,23 @@ chfs_client::mkdir(inum parent, const char *name, mode_t mode, inum &ino_out) {
     // if exists, then return EXIST
     if (found) return EXIST;
     // if not found, create new directory.
-    inum i;
-    ec->create(extent_protocol::T_DIR, i);
+    std::cout << "No dire with same name found" << std::endl;
+    ec->create(extent_protocol::T_DIR, ino_out);
+    std::cout << "Create inode for directory successfully." << std::endl;
 
     // construct the entry
     dirent entry;
-    construct_entry(i, entry, name);
+    construct_entry(ino_out, entry, name);
+    std::cout << "Construct entry:" << std::endl
+              << entry << std::endl;
 
     // get and modify the content of parent directory
     std::string content;
-    ec->get(i, content);
-    modify_dire_content(&entry, content);
+    ec->get(parent, content);
+    modify_content(content, &entry);
 
     // write back.
-    ec->put(i, content);
+    ec->put(parent, content);
 
     return r;
 }
@@ -256,22 +317,16 @@ chfs_client::lookup(inum parent, const char *name, bool &found, inum &ino_out) {
      * note: lookup file from parent dir according to name;
      * you should design the format of directory content.
      */
-    std::string content;
-    ec->get(parent, content);
-    int total_size = content.size();
-    int cursor = 0;
-    while (cursor < total_size) {
-        dirent entry = *((dirent *) &content[cursor]);
-
-        if (!strncmp(entry.name.c_str(), name, entry.name.size())) {
+    std::list <dirent> entries;
+    readdir(parent, entries);
+    std::cout << "Trying to look up for " << name << std::endl;
+    for (dirent &entry : entries) {
+        if (!strcmp(entry.name.c_str(), name)) {
+            std::cout << "Found Entry : " << std::endl
+                      << entry << std::endl;
             found = true;
-            ino_out = entry.inum;
-            std::cout << "Find file name: " << name << std::endl;
             break;
         }
-
-        unsigned int size = entry.entry_len;
-        cursor += size;
     }
     return r;
 }
@@ -282,9 +337,12 @@ chfs_client::readdir(inum dir, std::list <dirent> &list) {
 
     /*
      * your code goes here.
-     * note: you should parse the dirctory content using your defined format,
+     * note: you should parse the directory content using your defined format,
      * and push the dirents to the list.
      */
+    std::string content;
+    ec->get(dir, content);
+    parse_content(content, list);
 
     return r;
 }
@@ -297,6 +355,19 @@ chfs_client::read(inum ino, size_t size, off_t off, std::string &data) {
      * your code goes here.
      * note: read using ec->get().
      */
+
+    // fetch content
+    std::string content;
+    ec->get(ino, content);
+    unsigned int content_size = content.size();
+
+    // judge
+    // if off is valid.
+    if (off < content_size)
+        data = content.substr(off, size);
+        // else should get nothing.
+    else
+        data = "";
 
     return r;
 }
@@ -312,6 +383,30 @@ chfs_client::write(inum ino, size_t size, off_t off, const char *data,
      * when off > length of original file, fill the holes with '\0'.
      */
 
+    // fetch content
+    std::string content;
+    ec->get(ino, content);
+    unsigned int content_size = content.size();
+
+    // if bigger, then expand the content.
+    // expand with '\0', automatically fill the 'holes'
+    bytes_written = off + size - content_size;
+
+    if (bytes_written > 0)
+        content.append(std::string(bytes_written, 0));
+    else
+        bytes_written = 0;
+
+    // write data
+    memcpy(&content[off], data, size);
+
+    // modify mtime
+    extent_protocol::attr a;
+    ec->getattr(ino, a);
+    a.mtime = time(nullptr);
+
+    // put
+    ec->put(ino, content);
     return r;
 }
 

@@ -361,6 +361,7 @@ inode_manager::write_file(uint32_t inum, const char *buf, int size) {
     if (indirect_size > 0) {
         unsigned int indirect_block_id = _inode->blocks[NDIRECT];
         if (indirect_block_id) free_indirect(indirect_block_id);
+
         // indirect block => many direct blocks
         indirect_block_id = this->bm->alloc_block();
         _inode->blocks[NDIRECT] = indirect_block_id;
@@ -385,6 +386,7 @@ inode_manager::write_file(uint32_t inum, const char *buf, int size) {
         }
         this->bm->write_block(indirect_block_id, indirect_block);
     }
+
     // put inode
     _inode->size = size;
     put_inode(inum, _inode);
