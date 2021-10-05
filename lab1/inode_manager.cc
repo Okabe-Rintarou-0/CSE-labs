@@ -1,6 +1,6 @@
 #include "inode_manager.h"
 
-#define debug   std::cout << "called" << std::endl;
+#define debug  std::cout << "called" << std::endl;
 // disk layer -----------------------------------------
 
 disk::disk() {
@@ -78,6 +78,8 @@ block_manager::free_block(uint32_t id) {
      * your code goes here.
      * note: you should unmark the corresponding bit in the block bitmap when free.
      */
+//    std::cout << "bm: free block " << id << std::endl;
+
     if (id >= DHEAD && id <= BLOCK_NUM) {
         char block[BLOCK_SIZE];
         if (!check_free_and_free(id)) {
@@ -143,8 +145,11 @@ inode_manager::alloc_inode(uint32_t type) {
         inode *_inode = get_inode(i);
         if (_inode == nullptr) {
             _inode = (inode *) malloc(sizeof(inode));
+            memset(_inode, 0, sizeof(inode));
             _inode->type = type;
-            _inode->size = 0;
+            _inode->mtime = time(nullptr);
+            _inode->atime = time(nullptr);
+            _inode->ctime = time(nullptr);
             put_inode(i, _inode);
             free(_inode);
             return i;
@@ -275,10 +280,12 @@ inode_manager::read_file(uint32_t inum, char **buf_out, int *size) {
 //            std::cout << "Read block id: " << block_id << std::endl;
             this->bm->read_block(block_id, block);
             memcpy(*buf_out + i * BLOCK_SIZE, block, written_size);
+//            std::cout << "Read " << written_size << " bytes from block" << std::endl;
             rest_size -= written_size;
         }
     }
     free(_inode);
+//    std::cout << "Read succeed" << std::endl;
     /// TODO: do remember that the caller of this method should delete allocated objects.
     return;
 }
@@ -307,11 +314,13 @@ inode_manager::free_indirect(unsigned int indirect_block_id) {
 
     unsigned int direct_block_id;
     int idx = 0;
+    // free direct blocks it links to.
     while ((direct_block_id = read_block_id(indirect_block + 4 * idx))) {
         this->bm->free_block(direct_block_id);
         ++idx;
     }
 
+    // free itself
     this->bm->free_block(indirect_block_id);
 }
 
@@ -328,7 +337,7 @@ inode_manager::write_file(uint32_t inum, const char *buf, int size) {
     // check validation
     if (_inode == nullptr)
         return;
-    if ((unsigned int) size > (MAXFILE * BLOCK_SIZE) || size <= 0) {
+    if ((unsigned int) size > (MAXFILE * BLOCK_SIZE) || size < 0) {
         free(_inode);
         return;
     }
@@ -355,13 +364,27 @@ inode_manager::write_file(uint32_t inum, const char *buf, int size) {
         rest_size -= written_size;
     }
 
-    // calc the size of indirect blocks
-    // if > 0, means that need store block in indirect way
-    unsigned int indirect_size = size - direct_size;
-    if (indirect_size > 0) {
-        unsigned int indirect_block_id = _inode->blocks[NDIRECT];
-        if (indirect_block_id) free_indirect(indirect_block_id);
+    // free unused blocks
+    for (; i < NDIRECT; ++i) {
+        if (_inode->blocks[i] > 0) {
+            this->bm->free_block(_inode->blocks[i]);
+            _inode->blocks[i] = 0;
+        } else
+            break;
+    }
 
+    // calc the size of indirect blocks
+    unsigned int indirect_size = size - direct_size;
+    unsigned int indirect_block_id = _inode->blocks[NDIRECT];
+
+    // naive way, free whatever
+    if (indirect_block_id > 0) {
+        free_indirect(indirect_block_id);
+        _inode->blocks[NDIRECT] = 0;
+    }
+
+    // if > 0, means that need store block in indirect way
+    if (indirect_size > 0) {
         // indirect block => many direct blocks
         indirect_block_id = this->bm->alloc_block();
         _inode->blocks[NDIRECT] = indirect_block_id;
@@ -389,6 +412,8 @@ inode_manager::write_file(uint32_t inum, const char *buf, int size) {
 
     // put inode
     _inode->size = size;
+    _inode->mtime = time(nullptr);
+    _inode->atime = time(nullptr);
     put_inode(inum, _inode);
     free(_inode);
     return;
@@ -431,6 +456,7 @@ inode_manager::remove_file(uint32_t inum) {
     if ((indirect_block_id = _inode->blocks[NDIRECT])) {
         free_indirect(indirect_block_id);
     }
+
     free(_inode);
     free_inode(inum);
     return;

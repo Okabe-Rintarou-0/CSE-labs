@@ -122,10 +122,16 @@ fuseserver_setattr(fuse_req_t req, fuse_ino_t ino, struct stat *attr,
     if (FUSE_SET_ATTR_SIZE & to_set) {
         printf("   fuseserver_setattr set size to %zu\n", attr->st_size);
 
-#if 0
+#if 1
         struct stat st;
         // Change the above line to "#if 1", and your code goes here
         // Note: fill st using getattr before fuse_reply_attr
+
+        chfs_client::inum inum = ino;
+        chfs->setattr(inum, attr->st_size);
+
+        getattr(inum, st);
+        fuse_reply_attr(req, &st, 0);
 #else
         fuse_reply_err(req, ENOSYS);
 #endif
@@ -195,11 +201,14 @@ fuseserver_write(fuse_req_t req, fuse_ino_t ino,
     // write
     size_t bytes_written;
     chfs_client::inum inum = (chfs_client::inum) ino;
+    std::cout << "fuse: write to ino: " << ino << std::endl;
     chfs_client::status ret = chfs->write(inum, size, off, buf, bytes_written);
 
-    if (ret == chfs_client::OK)
+    if (ret == chfs_client::OK) {
+        std::cout << "fuse: write succeed" << std::endl;
+        std::cout << "bytes written: " << bytes_written << std::endl;
         fuse_reply_write(req, bytes_written);
-    else
+    } else
         fuse_reply_err(req, ENOSYS);
 #else
     fuse_reply_err(req, ENOSYS);
@@ -392,8 +401,18 @@ fuseserver_mkdir(fuse_req_t req, fuse_ino_t parent, const char *name,
     // Suppress compiler warning of unused e.
     (void) e;
 
-#if 0
+#if 1
     // Change the above line to "#if 1", and your code goes here
+    chfs_client::inum inum;
+    chfs_client::status ret = chfs->mkdir(parent, name, mode, inum);
+    if (ret == chfs_client::OK) {
+        e.ino = inum;
+        getattr(inum, e.attr);
+        fuse_reply_entry(req, &e);
+    } else if (ret == chfs_client::EXIST)
+        fuse_reply_err(req, EEXIST);
+    else
+        fuse_reply_err(req, ENOSYS);
 #else
     fuse_reply_err(req, ENOSYS);
 #endif

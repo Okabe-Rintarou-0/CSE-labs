@@ -217,17 +217,17 @@ chfs_client::setattr(inum ino, size_t size) {
      * according to the size (<, =, or >) content length.
      */
 
+    std::cout << "chfs try set file(inum = " << ino << ") size to " << size << std::endl;
+
     // fetch content of ino
     std::string content;
     ec->get(ino, content);
 
     // modify content
     // if bigger, append with '\0'.
-    if (size > content.size())
-        content.append(std::string(size - content.size(), 0));
-        // if smaller, truncate to size.
-    else if (size < content.size())
-        content = content.substr(0, size);
+    content.resize(size, 0);
+    std::cout << "After setattr: " << content << std::endl
+              << "content size = " << content.size() << std::endl;
 
     // put ino
     ec->put(ino, content);
@@ -324,6 +324,7 @@ chfs_client::lookup(inum parent, const char *name, bool &found, inum &ino_out) {
         if (!strcmp(entry.name.c_str(), name)) {
             std::cout << "Found Entry : " << std::endl
                       << entry << std::endl;
+            ino_out = entry.inum;
             found = true;
             break;
         }
@@ -355,6 +356,8 @@ chfs_client::read(inum ino, size_t size, off_t off, std::string &data) {
      * your code goes here.
      * note: read using ec->get().
      */
+    std::cout << "Trying to read (off = " << off << ", size = " << size << ") "
+              << "from file with inode = " << ino << std::endl;
 
     // fetch content
     std::string content;
@@ -368,6 +371,8 @@ chfs_client::read(inum ino, size_t size, off_t off, std::string &data) {
         // else should get nothing.
     else
         data = "";
+
+    std::cout << "Read content: " << data << std::endl;
 
     return r;
 }
@@ -383,30 +388,36 @@ chfs_client::write(inum ino, size_t size, off_t off, const char *data,
      * when off > length of original file, fill the holes with '\0'.
      */
 
+    std::cout << "Trying to write (off = " << off << ", size = " << size << ") "
+              << "into file with inode = " << ino << std::endl;
+
     // fetch content
     std::string content;
     ec->get(ino, content);
+    std::cout << "Before write: " << content << std::endl;
     unsigned int content_size = content.size();
 
     // if bigger, then expand the content.
     // expand with '\0', automatically fill the 'holes'
-    bytes_written = off + size - content_size;
+    bytes_written = off <= content_size ? size : off + size - content_size;
 
-    if (bytes_written > 0)
-        content.append(std::string(bytes_written, 0));
-    else
-        bytes_written = 0;
+    if (off + size > content_size)
+        content.resize(off + size, 0);
 
     // write data
     memcpy(&content[off], data, size);
+    std::cout << "After write: " << content << std::endl
+              << "content size: " << content.size() << std::endl;
 
     // modify mtime
-    extent_protocol::attr a;
-    ec->getattr(ino, a);
-    a.mtime = time(nullptr);
+//    extent_protocol::attr a;
+//    ec->getattr(ino, a);
+//    a.mtime = time(nullptr);
 
     // put
     ec->put(ino, content);
+
+    bytes_written = size;
     return r;
 }
 
