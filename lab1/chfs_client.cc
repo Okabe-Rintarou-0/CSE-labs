@@ -138,12 +138,7 @@ chfs_client::isfile(inum inum) {
         return false;
     }
 
-    if (a.type == extent_protocol::T_FILE) {
-        printf("isfile: %lld is a file\n", inum);
-        return true;
-    }
-    printf("isfile: %lld is a dir\n", inum);
-    return false;
+    return (a.type == extent_protocol::T_FILE);
 }
 
 /** Your code here for Lab...
@@ -155,7 +150,14 @@ chfs_client::isfile(inum inum) {
 bool
 chfs_client::isdir(inum inum) {
     // Oops! is this still correct when you implement symlink?
-    return !isfile(inum);
+    extent_protocol::attr a;
+
+    if (ec->getattr(inum, a) != extent_protocol::OK) {
+        printf("error getting attr\n");
+        return false;
+    }
+
+    return (a.type == extent_protocol::T_DIR);
 }
 
 int
@@ -217,7 +219,7 @@ chfs_client::setattr(inum ino, size_t size) {
      * according to the size (<, =, or >) content length.
      */
 
-    std::cout << "chfs try set file(inum = " << ino << ") size to " << size << std::endl;
+//    std::cout << "chfs: try set file(inum = " << ino << ") size to " << size << std::endl;
 
     // fetch content of ino
     std::string content;
@@ -226,8 +228,8 @@ chfs_client::setattr(inum ino, size_t size) {
     // modify content
     // if bigger, append with '\0'.
     content.resize(size, 0);
-    std::cout << "After setattr: " << content << std::endl
-              << "content size = " << content.size() << std::endl;
+//    std::cout << "After setattr: " << content << std::endl
+//              << "content size = " << content.size() << std::endl;
 
     // put ino
     ec->put(ino, content);
@@ -250,16 +252,16 @@ chfs_client::create(inum parent, const char *name, mode_t mode, inum &ino_out) {
     // if exists, then return EXIST
     if (found) return EXIST;
     // if not found, create new file.
-    std::cout << "No file with same name found" << std::endl;
+//    std::cout << "No file with same name found" << std::endl;
 
     ec->create(extent_protocol::T_FILE, ino_out);
-    std::cout << "Create inode for file successfully." << std::endl;
+//    std::cout << "Create inode for file successfully." << std::endl;
 
     // construct the entry
     dirent entry;
     construct_entry(ino_out, entry, name);
-    std::cout << "Construct entry:" << std::endl
-              << entry << std::endl;
+//    std::cout << "Construct entry:" << std::endl
+//              << entry << std::endl;
 
     // get and modify the content of parent directory
     std::string content;
@@ -287,15 +289,15 @@ chfs_client::mkdir(inum parent, const char *name, mode_t mode, inum &ino_out) {
     // if exists, then return EXIST
     if (found) return EXIST;
     // if not found, create new directory.
-    std::cout << "No dire with same name found" << std::endl;
+//    std::cout << "No dire with same name found" << std::endl;
     ec->create(extent_protocol::T_DIR, ino_out);
-    std::cout << "Create inode for directory successfully." << std::endl;
+//    std::cout << "Create inode for directory successfully." << std::endl;
 
     // construct the entry
     dirent entry;
     construct_entry(ino_out, entry, name);
-    std::cout << "Construct entry:" << std::endl
-              << entry << std::endl;
+//    std::cout << "Construct entry:" << std::endl
+//              << entry << std::endl;
 
     // get and modify the content of parent directory
     std::string content;
@@ -319,11 +321,11 @@ chfs_client::lookup(inum parent, const char *name, bool &found, inum &ino_out) {
      */
     std::list <dirent> entries;
     readdir(parent, entries);
-    std::cout << "Trying to look up for " << name << std::endl;
+//    std::cout << "Trying to look up for " << name << std::endl;
     for (dirent &entry : entries) {
         if (!strcmp(entry.name.c_str(), name)) {
-            std::cout << "Found Entry : " << std::endl
-                      << entry << std::endl;
+//            std::cout << "Found Entry : " << std::endl
+//                      << entry << std::endl;
             ino_out = entry.inum;
             found = true;
             break;
@@ -430,6 +432,77 @@ int chfs_client::unlink(inum parent, const char *name) {
      * and update the parent directory content.
      */
 
+    // prepare
+    std::list <dirent> entries;
+    std::string content;
+    ec->get(parent, content);
+    parse_content(content, entries);
+
+    // remove
+    for (auto iter = entries.begin(); iter != entries.end(); ++iter) {
+        if (!strcmp(iter->name.c_str(), name)) {
+            // remove block
+            ec->remove(iter->inum);
+            // remove from list
+            entries.erase(iter);
+            // resize content
+            content.resize(content.size() - iter->entry_len);
+            break;
+        }
+    }
+
+    // using naive way to modify content
+    int cursor = 0;
+    for (dirent &entry: entries) {
+        write_entry(&content[cursor], &entry);
+        cursor += entry.entry_len;
+    }
+
+    // modify parent
+    ec->put(parent, content);
+
     return r;
 }
 
+int chfs_client::symlink(inum parent, const char *link, const char *name, inum &ino_out) {
+    int r = OK;
+
+    // first look up if there exists symlink file with the same name
+    bool found = false;
+    lookup(parent, name, found, ino_out);
+    if (found)
+        return EXIST;
+
+    // create a new symlink file (with type extent_protocol::T_SYMLINK)
+    ec->create(extent_protocol::T_SYMLINK, ino_out);
+    ec->put(ino_out, std::string(link));
+
+    // modify the content of parent
+    std::string content;
+    ec->get(parent, content);
+
+    // construct the entry
+    dirent entry;
+    construct_entry(ino_out, entry, name);
+
+    // modify content
+    modify_content(content, &entry);
+
+    // put
+    ec->put(parent, content);
+
+    return r;
+}
+
+int chfs_client::readlink(inum ino, std::string &data) {
+    int r = OK;
+
+    // fetch data
+    ec->get(ino, data);
+
+    return r;
+}
+
+bool chfs_client::issymlink(inum ino) {
+    return !isfile(ino) && !isdir(ino);
+}

@@ -79,6 +79,12 @@ public:
 
     void modify_content(std::string &, dirent *);
 
+    bool issymlink(inum);
+
+    int symlink(inum, const char *, const char *, inum &);
+
+    int readlink(inum, std::string &);
+
     /** you may need to add symbolic link related methods here.*/
 };
 
