@@ -131,7 +131,6 @@ int test_indirect()
                 printf("error get, return not OK\n");
                 return 2;
             }
-            std::cout << "try compare" << std::endl;
             if (buf.compare(content[i]) != 0) {
                 std::cout << "error get large file, not consistent with put large file : " << 
                     buf << " <-> " << content[i] << "\n";
@@ -207,7 +206,6 @@ int test_put_and_get()
 
     total_score += 30;
     printf("========== pass test put and get ==========\n");
-    free(temp);
     return 0;
 }
 

@@ -45,6 +45,7 @@ block_manager::alloc_and_write(const char *buf, int size) {
     read_block(block_id, block);
     memcpy(block, buf, size);
     write_block(block_id, block);
+//    std::cout << "bm: alloc and write succeed" << std::endl;
     return block_id;
 }
 
@@ -144,8 +145,8 @@ inode_manager::alloc_inode(uint32_t type) {
     for (int i = 1; i <= INODE_NUM; ++i) {
         inode *_inode = get_inode(i);
         if (_inode == nullptr) {
-            _inode = (inode *) malloc(sizeof(inode));
-            memset(_inode, 0, sizeof(inode));
+            _inode = (struct inode *) malloc(sizeof(struct inode));
+            memset(_inode, 0, sizeof(struct inode));
             _inode->type = type;
             _inode->mtime = time(nullptr);
             _inode->atime = time(nullptr);
@@ -185,7 +186,7 @@ inode_manager::get_inode(uint32_t inum) {
     struct inode *ino, *ino_disk;
     char buf[BLOCK_SIZE];
 
-//  printf("\tim: get_inode %d\n", inum);
+    printf("\tim: get_inode %d\n", inum);
 
     if (inum < 0 || inum >= INODE_NUM) {
         printf("\tim: inum out of range\n");
@@ -210,7 +211,7 @@ inode_manager::put_inode(uint32_t inum, struct inode *ino) {
     char buf[BLOCK_SIZE];
     struct inode *ino_disk;
 
-//    printf("\tim: put_inode %d\n", inum);
+    printf("\tim: put_inode %d\n", inum);
     if (ino == NULL)
         return;
 
@@ -342,6 +343,8 @@ inode_manager::write_file(uint32_t inum, const char *buf, int size) {
         return;
     }
 
+//    std::cout << "im: try to write " << size << " bytes." << std::endl;
+
     // calc the size of direct blocks
     unsigned int direct_size = size <= NDIRECT * BLOCK_SIZE ? size : NDIRECT * BLOCK_SIZE;
 
@@ -364,6 +367,8 @@ inode_manager::write_file(uint32_t inum, const char *buf, int size) {
         rest_size -= written_size;
     }
 
+//    std::cout << "im: write direct part succeed" << std::endl;
+
     // free unused blocks
     for (; i < NDIRECT; ++i) {
         if (_inode->blocks[i] > 0) {
@@ -372,6 +377,8 @@ inode_manager::write_file(uint32_t inum, const char *buf, int size) {
         } else
             break;
     }
+
+//    std::cout << "im: free direct blocks succeed" << std::endl;
 
     // calc the size of indirect blocks
     unsigned int indirect_size = size - direct_size;
@@ -383,32 +390,36 @@ inode_manager::write_file(uint32_t inum, const char *buf, int size) {
         _inode->blocks[NDIRECT] = 0;
     }
 
+//    std::cout << "im: free indirect block succeed" << std::endl;
+
     // if > 0, means that need store block in indirect way
     if (indirect_size > 0) {
         // indirect block => many direct blocks
         indirect_block_id = this->bm->alloc_block();
         _inode->blocks[NDIRECT] = indirect_block_id;
 
+//        std::cout << "im: alloc id " << indirect_block_id << "for indirect block" << std::endl;
+
         // calc the number of direct blocks that the indirect block links to
         n_direct_blocks = indirect_size % BLOCK_SIZE ? indirect_size / BLOCK_SIZE + 1 : indirect_size / BLOCK_SIZE;
 
         char indirect_block[BLOCK_SIZE];
-        this->bm->read_block(indirect_block_id, indirect_block);
+        memset(indirect_block, 0, BLOCK_SIZE);
         rest_size = indirect_size;
+//        std::cout << "im: read indirect block" << std::endl;
+
         for (unsigned int i = 0; i < n_direct_blocks; ++i) {
             written_size = rest_size > BLOCK_SIZE ? BLOCK_SIZE : rest_size;
-            direct_block_id = read_block_id(&indirect_block[i * 4]);
-            if (direct_block_id) {
-                this->bm->overwrite(direct_block_id, buf + (NDIRECT + i) * BLOCK_SIZE, written_size);
-            } else {
-                direct_block_id = this->bm->alloc_and_write(buf + (NDIRECT + i) * BLOCK_SIZE, written_size);
-                // write block id into the indirect block
-                // four byte each. so i * 4
-                write_block_id(&indirect_block[i * 4], direct_block_id);
-            }
+            direct_block_id = this->bm->alloc_and_write(buf + (NDIRECT + i) * BLOCK_SIZE, written_size);
+            // write block id into the indirect block
+            // four byte each. so i * 4
+            write_block_id(&indirect_block[i * 4], direct_block_id);
+            rest_size -= written_size;
         }
         this->bm->write_block(indirect_block_id, indirect_block);
     }
+
+//    std::cout << "im: write indirect part succeed" << std::endl;
 
     // put inode
     _inode->size = size;
@@ -417,6 +428,8 @@ inode_manager::write_file(uint32_t inum, const char *buf, int size) {
     _inode->atime = time(nullptr);
     put_inode(inum, _inode);
     free(_inode);
+
+//    std::cout << "im: write succeed" << std::endl;
     return;
 }
 
