@@ -12,8 +12,9 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <assert.h>
 
-#include "rpc/rpc.h"
+#include "rpc.h"
 #include "mr_protocol.h"
 
 using namespace std;
@@ -24,6 +25,11 @@ struct KeyVal {
     string key;
     string val;
 };
+
+ostream &operator<<(ostream &os, const KeyVal &keyVal) {
+    cout << "(" << keyVal.key << ", " << keyVal.val << ")" << endl;
+    return os;
+}
 
 inline bool isLetter(char ch) {
     return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
@@ -91,7 +97,7 @@ public:
 private:
     void doMap(int index, const string &filename);
 
-    void doReduce(int index);
+    void doReduce(int index, int nfiles);
 
     void doSubmit(mr_tasktype taskType, int index);
 
@@ -99,6 +105,8 @@ private:
 
     mutex mtx;
     int id;
+
+    bool working = false;
 
     rpcc *cl;
     std::string basedir;
@@ -126,51 +134,106 @@ void Worker::askTask(mr_protocol::AskTaskResponse &res) {
 
 void Worker::doMap(int index, const string &filename) {
     // Lab2: Your code goes here.
-    string intermediate_prefix;
-    intermediate_prefix = "mr-" + to_string(index) + "-";
+    working = true;
+    string intermediatePrefix;
+    //this->basedir
+    intermediatePrefix = basedir + "mr-" + to_string(index) + "-";
     string content;
     ifstream file(filename);
-    file >> content;
+    ostringstream tmp;
+    tmp << file.rdbuf();
+    content = tmp.str();
 
-    cout << "read from file: " << filename << ", and its content is: " + content.substr(0, 5) << "..." << endl;
+//    cout << "read from file: " << filename
+//         << ", and its content is: " + content.substr(0, 5)
+//         << "... (" << content.size() << " in total)" << endl;
 
     vector <KeyVal> keyVals = Map(filename, content);
+
+//    cout << "Finish map. Now write into intermediates..." << endl;
+
     vector <string> contents(REDUCER_COUNT);
     for (const KeyVal &keyVal:keyVals) {
         int reducerId = strHash(keyVal.key);
-        contents[reducerId] += keyVal.key + ":" + keyVal.val + ";";
+        contents[reducerId] += keyVal.key + ' ' + keyVal.val + '\n';
     }
+
+    for (int i = 0; i < REDUCER_COUNT; ++i) {
+        const string &content = contents[i];
+        if (!content.empty()) {
+            string intermediateFilepath = intermediatePrefix + to_string(i);
+            ofstream file(intermediateFilepath, ios::out);
+            file << content;
+            file.close();
+        }
+    }
+
+    file.close();
 }
 
-void Worker::doReduce(int index) {
+void Worker::doReduce(int index, int nfiles) {
     // Lab2: Your code goes here.
+//    cout << "worker: start reducing on " << index << endl;
+    string filepath;
+    unordered_map<string, unsigned long long> wordFreqs;
+    for (int i = 0; i < nfiles; ++i) {
+        filepath = basedir + "mr-" + to_string(i) + '-' + to_string(index);
+        ifstream file(filepath, ios::in);
+        if (!file.is_open()) {
+//            cout << "reduce worker: file " << filepath << "doesn't exist" << endl;
+            continue;
+        }
+        string key, value;
+//        cout << "reduce worker: read from file " << filepath << endl;
+        while (file >> key >> value) {
+            wordFreqs[key] += atoll(value.c_str());
+//            cout << "worker " << index << " put key: " << key << ", " << value << endl;
+        }
+        file.close();
+    }
 
+    string content;
+    for (const pair<string, unsigned long long> &keyVal: wordFreqs) {
+//        cout << "worker " << index << ": Key: " << keyVal.first << " and value: " << keyVal.second << endl;
+        content += keyVal.first + ' ' + to_string(keyVal.second) + '\n';
+    }
+
+    ofstream mrOut(basedir + "mr-out", ios::out | ios::app);
+    mrOut << content << endl;
+    mrOut.close();
+    working = true;
 }
 
 void Worker::doSubmit(mr_tasktype taskType, int index) {
-    bool b;
-    mr_protocol::status ret = this->cl->call(mr_protocol::submittask, taskType, index, b);
-    if (ret != mr_protocol::OK) {
+    bool success;
+    mr_protocol::status ret = this->cl->call(mr_protocol::submittask, (int) taskType, index, success);
+    if (ret != mr_protocol::OK || !success) {
         fprintf(stderr, "submit task failed\n");
         exit(-1);
     }
+//    cout << "worker: submit succeeded" << endl;
+    working = false;
 }
 
 void Worker::doWork() {
     for (;;) {
         mr_protocol::AskTaskResponse res;
-        askTask(res);
+        if (!working)
+            askTask(res);
         switch (res.tasktype) {
             case MAP:
-                cout << "worker: receive map task" << endl;
+                cout << "worker: receive map task " << res.index << endl;
                 doMap(res.index, res.filename);
+                doSubmit(MAP, res.index);
                 break;
             case REDUCE:
-                cout << "worker: receive reduce task" << endl;
+                cout << "worker: receive reduce task" << res.index << endl;
+                doReduce(res.index, res.nfiles);
+                doSubmit(REDUCE, res.index);
                 break;
             case NONE:
                 cout << "worker: receive no task" << endl;
-                sleep(2);
+                sleep(1);
                 break;
         }
         // Lab2: Your code goes here.

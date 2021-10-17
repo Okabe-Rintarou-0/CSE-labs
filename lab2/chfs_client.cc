@@ -160,7 +160,7 @@ int
 chfs_client::getfile(inum inum, fileinfo &fin) {
     int r = OK;
 
-    printf("getfile %016llx\n", inum);
+//    printf("getfile %016llx\n", inum);
     extent_protocol::attr a;
     if (ec->getattr(inum, a) != extent_protocol::OK) {
         r = IOERR;
@@ -171,7 +171,7 @@ chfs_client::getfile(inum inum, fileinfo &fin) {
     fin.mtime = a.mtime;
     fin.ctime = a.ctime;
     fin.size = a.size;
-    printf("getfile %016llx -> sz %llu\n", inum, fin.size);
+//    printf("getfile %016llx -> sz %llu\n", inum, fin.size);
 
     release:
     return r;
@@ -181,7 +181,7 @@ int
 chfs_client::getdir(inum inum, dirinfo &din) {
     int r = OK;
 
-    printf("getdir %016llx\n", inum);
+//    printf("getdir %016llx\n", inum);
     extent_protocol::attr a;
     if (ec->getattr(inum, a) != extent_protocol::OK) {
         r = IOERR;
@@ -317,11 +317,11 @@ chfs_client::lookup(inum parent, const char *name, bool &found, inum &ino_out) {
      */
     std::list <dirent> entries;
     readdir(parent, entries);
-    std::cout << "Trying to look up for " << name << std::endl;
+//    std::cout << "Trying to look up for " << name << std::endl;
     for (dirent &entry : entries) {
         if (!strcmp(entry.name.c_str(), name)) {
-            std::cout << "Found Entry : " << std::endl
-                      << entry << std::endl;
+//            std::cout << "Found Entry : " << std::endl
+//                      << entry << std::endl;
             ino_out = entry.inum;
             found = true;
             break;
@@ -354,8 +354,8 @@ chfs_client::read(inum ino, size_t size, off_t off, std::string &data) {
      * your code goes here.
      * note: read using ec->get().
      */
-    std::cout << "Trying to read (off = " << off << ", size = " << size << ") "
-              << "from file with inode = " << ino << std::endl;
+//    std::cout << "Trying to read (off = " << off << ", size = " << size << ") "
+//              << "from file with inode = " << ino << std::endl;
 
     // fetch content
     std::string content;
@@ -370,7 +370,7 @@ chfs_client::read(inum ino, size_t size, off_t off, std::string &data) {
     else
         data = "";
 
-    std::cout << "Read content: " << data << std::endl;
+//    std::cout << "Read content: " << data << std::endl;
 
     return r;
 }
@@ -386,13 +386,13 @@ chfs_client::write(inum ino, size_t size, off_t off, const char *data,
      * when off > length of original file, fill the holes with '\0'.
      */
 
-    std::cout << "Trying to write (off = " << off << ", size = " << size << ") "
-              << "into file with inode = " << ino << std::endl;
+//    std::cout << "Trying to write (off = " << off << ", size = " << size << ") "
+//              << "into file with inode = " << ino << std::endl;
 
     // fetch content
     std::string content;
     ec->get(ino, content);
-    std::cout << "Before write: " << content << std::endl;
+//    std::cout << "Before write: " << content << std::endl;
     unsigned int content_size = content.size();
 
     // if bigger, then expand the content.
@@ -404,8 +404,8 @@ chfs_client::write(inum ino, size_t size, off_t off, const char *data,
 
     // write data
     memcpy(&content[off], data, size);
-    std::cout << "After write: " << content << std::endl
-              << "content size: " << content.size() << std::endl;
+//    std::cout << "After write: " << content << std::endl
+//              << "content size: " << content.size() << std::endl;
 
     // modify mtime
 //    extent_protocol::attr a;

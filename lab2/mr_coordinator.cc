@@ -9,7 +9,7 @@
 #include <mutex>
 
 #include "mr_protocol.h"
-#include "rpc/rpc.h"
+#include "rpc.h"
 
 using namespace std;
 
@@ -34,7 +34,7 @@ public:
 
     bool Done();
 
-    Task getAvailableTask(int &index);
+    bool assignTask(Task &task);
 
 private:
     vector <string> files;
@@ -55,41 +55,77 @@ private:
 
 mr_protocol::status Coordinator::askTask(int, mr_protocol::AskTaskResponse &reply) {
     // Lab2 : Your code goes here.
-    Task availableTask = getAvailableTask(reply.index);
-    reply.tasktype = (mr_tasktype) availableTask.taskType;
-    reply.filename = getFile(reply.index);
+    Task availableTask;
+    if (assignTask(availableTask)) {
+        reply.index = availableTask.index;
+        reply.tasktype = (mr_tasktype) availableTask.taskType;
+        reply.filename = getFile(reply.index);
+        reply.nfiles = files.size();
+        cout << "coordinator: assign file " << reply.filename << " to worker" << endl;
+    } else {
+        cout << "coordinator: no available tasks " << endl;
+        reply.index = -1;
+        reply.tasktype = NONE;
+        reply.filename = "";
+    }
+
     return mr_protocol::OK;
 }
 
 mr_protocol::status Coordinator::submitTask(int taskType, int index, bool &success) {
     // Lab2 : Your code goes here.
-
+    mtx.lock();
+    switch (taskType) {
+        case MAP:
+            cout << "A worker is trying to submit a map task with id: " << index << endl;
+            mapTasks[index].isCompleted = true;
+            mapTasks[index].isAssigned = false;
+            this->completedMapCount++;
+            break;
+        case REDUCE:
+            reduceTasks[index].isCompleted = true;
+            reduceTasks[index].isAssigned = false;
+            this->completedReduceCount++;
+            break;
+        default:
+            break;
+    }
+    if (this->completedMapCount >= (long) mapTasks.size() && this->completedReduceCount >= (long) reduceTasks.size()) {
+        this->isFinished = true;
+    }
+    mtx.unlock();
+    success = true;
+    cout << "coordinator: submit succeeded" << endl;
     return mr_protocol::OK;
 }
 
-Task Coordinator::getAvailableTask(int &index) {
-    Task availableTask;
-    availableTask.taskType = NONE;
+bool Coordinator::assignTask(Task &task) {
+    task.taskType = NONE;
+    bool found = false;
     this->mtx.lock();
     if (this->completedMapCount < long(this->mapTasks.size())) {
-        for (index = 0; index < (int) this->mapTasks.size(); ++index) {
-            const Task &thisTask = this->mapTasks[index];
+        for (int i = 0; i < (int) this->mapTasks.size(); ++i) {
+            Task &thisTask = this->mapTasks[i];
             if (!thisTask.isCompleted && !thisTask.isAssigned) {
-                availableTask = thisTask;
+                task = thisTask;
+                thisTask.isAssigned = true;
+                found = true;
                 break;
             }
         }
     } else {
-        for (index = 0; index < (int) this->reduceTasks.size(); ++index) {
-            const Task &thisTask = this->reduceTasks[index];
+        for (int i = 0; i < (int) this->reduceTasks.size(); ++i) {
+            Task &thisTask = this->reduceTasks[i];
             if (!thisTask.isCompleted && !thisTask.isAssigned) {
-                availableTask = thisTask;
+                task = thisTask;
+                thisTask.isAssigned = true;
+                found = true;
                 break;
             }
         }
     }
     this->mtx.unlock();
-    return availableTask;
+    return found;
 }
 
 string Coordinator::getFile(int index) {
@@ -135,9 +171,7 @@ bool Coordinator::Done() {
 // create a Coordinator.
 // nReduce is the number of reduce tasks to use.
 //
-Coordinator::Coordinator(
-        const vector <string> &files,
-        int nReduce) {
+Coordinator::Coordinator(const vector <string> &files, int nReduce) {
     this->files = files;
     this->isFinished = false;
     this->completedMapCount = 0;

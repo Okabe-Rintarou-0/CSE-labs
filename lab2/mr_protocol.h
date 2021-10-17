@@ -31,15 +31,16 @@ public:
         // Lab2: Your definition here.
         int tasktype;
         int index;
+        int nfiles; // reducer need to know this.
         string filename;
     };
 
     friend marshall &operator<<(marshall &m, const AskTaskResponse &res) {
-        return m << res.tasktype << res.filename << res.index;
+        return m << res.tasktype << res.filename << res.index << res.nfiles;
     }
 
     friend unmarshall &operator>>(unmarshall &u, AskTaskResponse &res) {
-        return u >> res.tasktype >> res.filename >> res.index;
+        return u >> res.tasktype >> res.filename >> res.index >> res.nfiles;
     }
 
     struct AskTaskRequest {

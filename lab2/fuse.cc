@@ -213,12 +213,12 @@ fuseserver_write(fuse_req_t req, fuse_ino_t ino,
     // write
     size_t bytes_written;
     chfs_client::inum inum = (chfs_client::inum) ino;
-    std::cout << "fuse: write to ino: " << ino << std::endl;
+//    std::cout << "fuse: write to ino: " << ino << std::endl;
     chfs_client::status ret = chfs->write(inum, size, off, buf, bytes_written);
 
     if (ret == chfs_client::OK) {
-        std::cout << "fuse: write succeed" << std::endl;
-        std::cout << "bytes written: " << bytes_written << std::endl;
+//        std::cout << "fuse: write succeed" << std::endl;
+//        std::cout << "bytes written: " << bytes_written << std::endl;
         fuse_reply_write(req, bytes_written);
     } else
         fuse_reply_err(req, ENOSYS);
