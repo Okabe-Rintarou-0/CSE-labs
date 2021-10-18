@@ -28,6 +28,18 @@ labs of CSE. From lesson SE124.
 + **imgs**: store the images of notes.
 + **notes**: store the notes on each lab.
 
+### Usage of scripts
+
++ **Start.sh**: mount the file system
++ **Stop.sh**: unmount the file system
++ **\*.pl**: test scripts for each part
+
+### How to test
+
++ Using provided **./grade.sh**
++ Manually **./stop.sh | ./start.sh | ./*.pl** to test single part.
++ Or you can directly test it **without** mounting the file system.
+
 ### Annoying segmentation fault
 
 + Segmentation fault(core dumped):
