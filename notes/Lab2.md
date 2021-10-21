@@ -12,7 +12,7 @@ Notice that the file system we created in the last lab is not a distributed one.
 
 It is still very useful to have a good knowledge of the overall structure.
 
- <img src="../imgs/structure.png" style="zoom: 15%;" />
+ <img src="../imgs/structure.png" style="width:600px;height:400px" />
 
 In lab1, we have been focusing on building up the basic file system by implementing the **inode manager** and the **chfs client**.
 
