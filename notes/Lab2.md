@@ -26,6 +26,13 @@ The **extent_client** implements **RPC** to call the interfaces provided by **ex
 
 In the main function of **fuse.cc**, the file system will be **mounted**.
 
+### Notice
+
+Notice that all the file I/O will base on RPC, so you should reduce the number of RPC by:
+
++ Reading all the content from the file.
++ When appending contents to a file, collect all the contents together and then write them.
+
 ### RPC(Remote Procedure Call)
 
 #### Overview
@@ -59,7 +66,7 @@ The basic duty of client stub and server stub:
 
 #### Request/Response
 
-+ Using **marshall** and **unmarshall**, namely serialize and unserialize.
++ Using **marshal** and **unmarshal**, namely serialize and unserialize.
 
 + Notice that its no use to send references, for the client and server absolutely doesn't share the same memory space. Only sending value make sense.
 + Parameter passing is very challenging, for two machines may have differet:
@@ -104,4 +111,66 @@ The basic duty of client stub and server stub:
 
   Also it's not so readable, but it can save lots of space, which is very suitable for message metadata in RPC.
 
-  
+  Use **Thrift interface definition language(IDL)** and **Protocol Buffers IDL** to compact space.
+
+#### When RPC meets failure
+
++ When a client is using RPC to call a function but get no reply, the reason behind it is heterogeneous.
+
+  It could be: 
+
+  + The remote node dumps
+  + The response is lost on the internet
+  + The remote node is experiencing a pause because of GC
+  + etc
+
++ **At-least-once semantics** & **At-most-once semantics**
+
++ **Idempotent** & **Non-idempotent** 
+
+  When **at-least-once** is ever **OK**? 
+
+  + if no side effects (e.g., read-only operation) 
+
+  + if app has its own plan for detecting duplication
+
++ **Implement exactly-once** semantics: 
+
+  + Server remembers the requests it has seen and replies to executed RPCs (across reboots) 
+
+  + **Detect duplicates**, requests need unique IDs (XIDs)
+
++ This is a **tradeoff**, a server will have to store extra information, thus being stateful.
+
+#### Summary
+
++ Standards for wire format of RPC message and data types? **IDL**
+
++ Library of routines to **marshal /** **unmarshal** data
+
++ Stub generator, or RPC compiler, to produce "stubs"
+
+  + marshal arguments, call, wait, unmarshal reply
+
+  + unmarshal arguments, call real function, marshal reply
+
+  + similar to Web Service based on WSDL
+
++ Server framework:
+
+  + Dispatch each call message to correct server stub
+
+  + Recall each called functions ,if provide **at-most-once** semantic or **exactly-once semantic** 
+
++ Client framework:
+
+  + Give each reply to correct waiting thread / callback
+
+  + Retry if timeout or server cache
+
++ Binding: how does client find the right server? Use **socket** binding. 
+
+### Distributed File System
+
+### MapReduce
+
