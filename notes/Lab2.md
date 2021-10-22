@@ -172,5 +172,158 @@ The basic duty of client stub and server stub:
 
 ### Distributed File System
 
+#### NFS(Network File System)
+
+##### **Design Goals** (by Sun, 1980s, designed for workstations)
+
++ Any machine can be a client or server
+
++ Support **diskless** workstations
+
++ **Heterogeneous** system must be supported. 
+  + Different HW, OS, underlying file system
++ Access **transparency** **(just like you are visiting files locally)**
+  + Use remote access model 
+
++ Recovery from **failure**
+  + Stateless, UDP, client retries	
++ High **performance**
+  + Use caching and read-ahead
+
+##### The api of RPC
+
+![](../imgs/rpc_api.png)
+
++Lookup
+
+-Open/Close
+
+##### Steps
+
++ Mount:  
+
+  + Server exposes the endpoint
+
+  + Client parses **pathname** and contacts server for file **handle** 
+  + Server returns file handle
+  + Client creates in-memory **VFS inode** (vnode) at mount point which internally points to remote files
+
++ Lookup:
+
+  + Client lookup to get handle and attributes of a file, which can be used as the parameter of the other access functions: 
+    + e.g., read(handle, offset, count)
+
++ Application:
+
+  + Application can use traditional unix file api, like open, close, using file descriptor.
+
+![](../imgs/NFSprocess.png)
+
++ Overall Description:
+
+  + Application calls traditional unix file api.
+  + NFS Client use RPC
+  + NFS Server is stateless, while NFS Client is stateful, which stores some metadata of opened files, like the cursor.
+
+  Application calls OPEN, then the NFC Client calls LOOKUP to get the file handle from NFS Server.
+
+  READ and CLOSE is similar to OPEN. But notice that the server doesn't know whether an application has closed a file, for it stores no information about it. Also, the read operation for application is **idempotent**, for the client is **stateful**, which stores information like the **cursor** of an opened file. So,   each time an application call READ/WRITE, if failed, the cursor will not move, thus making each read/write **idempotent**.
+  
+  NFS Client is in the **kernel** mode.
+
+##### File Handler Structure
+
+File handler contains three parts:
+
++ **File system identifier**: for server to identify the file system
+
++ **inode** **number**: for server to locate the file
+
++ **Generation number**: for server to maintain consistency of a file (Expire)
+
+##### Q & A
+
++ Why not use path instead of inode number? 
+
+  If someone open a file named file1, while another person renames file1 to file2, and file3 to file1, what will happen?
+
++ What if a client repeats a request until it receives a reply?
+
+  Server maintains some soft state: reply cache.
+
++ What about the case of "Delete after open?" (A opens a file, while B delete this file, and logically A should read the content of the old file)
+
+  Server should store more information, it's a **tradeoff**!
+
+##### Improvement
+
+Client: 
+
++ Cache file data at client (buffer cache)
++ Cache file attribute information at client
++ Cache pathname bindings for faster lookup
+
+Server:
+
++ Caching is “automatic” via buffer cache
+
++ All NFS writes are write-through to disk(Flush to disk)
+
+###### But you know, for caching, efficiency and consistence is a tradeoff
+
+**Type-1:** **Read/write coherence**
+
++ On local file system, **READ** gets newest data
+
++ On NFS, client has cache
+
++ **NFS could guarantee read/write coherence for every operation, or just for certain operation**
+
+**Type-2:** **Close-to-open consistency**
+
++ Higher data rate
+
++ **GETATTR** when **OPEN**, to get last modification time
+
++ Compare the time with its cache
+
++ When **CLOSE**, send cached writes to the server 
+
+![](../imgs/2close2opencases.png)
+
+![](../imgs/VFS_01.png)
+
+**Vnode layer make external files behave like local files.**
+
+##### Validation
+
+When file opened or server contacted for new
+
++ Compare last modification time
+
++ If remote is more recent, invalidate cached data
+
+Always **invalidate** data after some time
+
++ open files (3 sec), directories (30 sec)
+
+If data block is modified, it is:
+
++ Marked **dirty**, then flushed on file close
+
+##### Improve read performance
+
++ Read ahead
++ Read large chunck
+  + e.g., 8kb
+
+##### Drawbacks
+
++ **Assumes synchronized clock** **(a** **global** **clock)**
++ **Locking cannot work**
++ **No reference counting of open files** **(stateless** **server)**
+
+#### GFS(Google File System)
+
 ### MapReduce
 
