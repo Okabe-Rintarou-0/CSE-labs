@@ -325,5 +325,24 @@ If data block is modified, it is:
 
 #### GFS(Google File System)
 
+##### Feature
+
++ Scalable
++ Designed for large data-intensive applications
++ Fault-tolerant 
++ Deliver high performance to a large number of clients
++ Different from conventional file systems.
+  + Large files(n-GB/TB)
+  + Mainly append
+
++ Workload is mainly:
+  + mostly reads: large streaming reads;
+  + large appends;
+  + **hundreds** of procs append to a file concurrently
+
+##### Structure
+
+<img src="../imgs/GFS_structure.png" style="width:500px;" />
+
 ### MapReduce
 
