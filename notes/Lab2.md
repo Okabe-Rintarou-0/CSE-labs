@@ -344,5 +344,66 @@ If data block is modified, it is:
 
 <img src="../imgs/GFS_structure.png" style="width:500px;" />
 
+GFS is composed of one master(Physically running on a machine.) and some chunk servers.
+
+<img src="../imgs/GFS_structure2.png" style="width:500px;" />
+
+##### Chunk and chunckserver
+
++ Chunk size **= 64 MB** (default)
+  + 32-bit checksum with each chunk
+
++ Chunk **handle**
+  + Globally unique 64-bit number
++ Assigned by the master when creation 
+
++ Each chunk has two replicas thus making GFS fault-tolerant.
++ More replicas for popular files to avoid **hotspots**
+
+##### Master
+
++ Maintains all **file system metadata**
+  + Namespace, access control info, filename to chunks mappings, current locations of chunks
+
++ Manages chunk **leases** (locks), **garbage** collection, chunk **migration**
+
++ Master **replicates** its data for **fault-tolerance**
+
++ Periodically communicates with all nodes
+  + Via **heartbeat** messages
+  + To get state and send commands
+
 ### MapReduce
+
+#### Basic description
+
+Batch processing is very important when facing large number of data, while MapReduce is a very classic way to do batch processing. Classic as it is, many big data analysis companies are still using MapReduce. Also, MapReduce is a pioneer in the field of batch processing, having great effects on many other tools. 
+
+Map means traversing every item of a list and map them to a new item.
+
+Reduce means merge mapped items into a new item. 
+
+It's very similar to the process of making a sandwiches: 
+
+<img src="../imgs/mapreduce_sandwiches.jfif" style="width:500px;" />
+
+We may use MapReduce in many situations, like the follows:
+
+![](../imgs/mapreduce_pipeline.png)
+
+The above command pipeline is trying to order and count the access record, so as to find the top 5 most popular pages.
+
+Here's a more common and simple example: word count.
+
+The process of word count can be listed as:
+
++ Map: 
+
+  Traverse the articles and map each word into < word, 1 > pair.
+
++ Reduce:
+
+  For every mapped pair, count the word and merge them to < word, frequency >
+
+  e.g., 3 pairs of < cat, 1 > will be reduced to < cat, 3 >
 
