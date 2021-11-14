@@ -9,6 +9,20 @@ labs of CSE. From lesson SE124.
 | [Lab1](./lab1) | [Basic File System](./notes/Lab1.md)         | A basic file system that will be used in later labs.         |
 | [Lab2](./lab2) | [Word Count with MapReduce](./notes/Lab2.md) | Use MapReduce to count word frequency based on distributed fs. |
 
+### Exams
+
+| Exam        | Solution                                        | Remarks                                                      |
+| -------------- | -------------------------------------------- | ------------------------------------------------------------ |
+| [2020 Mid Term](./exams/2020-CSE-midterm.pdf) | [2020 Mid Term Solution](./exams/2020-CSE-midterm-sol.pdf)         |          |
+
+### Review Notes
+
+For review and print.
+
+| Note      | Remark                                        |
+| -------------- | -------------------------------------------- |
+| [Mid Term Review](./exams/review_notes) | A Chinese version review note.|         
+
 ### File Structure
 
 ```
@@ -17,6 +31,7 @@ labs of CSE. From lesson SE124.
 	└── docs
 		└── lab1
         	└── ...
+	├── exams
 	├── imgs
 	├── lab1
     	├── ...
@@ -25,6 +40,7 @@ labs of CSE. From lesson SE124.
 ```
 
 + **docs**: store some materials about lab, like the design of ext3.
++ **exams**: store exams and some review notes(in Chinese XD)
 + **imgs**: store the images of notes.
 + **notes**: store the notes on each lab.
 
