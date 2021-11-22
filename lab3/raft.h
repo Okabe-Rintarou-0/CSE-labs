@@ -117,6 +117,7 @@ private:
     int commit_index;
 
     std::vector<int> nextIndex;
+    std::vector<int> lastApply;
 
     std::vector <log_entry<command>> logs;
 
@@ -180,6 +181,8 @@ private:
 
     void notify_commit();
 
+    void notify_commit(int target);
+
     inline void update_last_RPC_time();
 
     inline bool is_timeout();
@@ -234,6 +237,7 @@ raft<state_machine, command>::raft(rpcs *server, std::vector<rpcc *> clients, in
     // init the log with 1 size.
     num = rpc_clients.size();
     nextIndex.assign(num, 0);
+    lastApply.assign(num, 0);
     ping_pong.assign(num, 0);
     logs.assign(1, log_entry<command>());
 }
@@ -302,9 +306,9 @@ bool raft<state_machine, command>::new_command(command cmd, int &term, int &inde
     // Your code here:
     if (role != leader) return false;
     term = current_term;
-    RAFT_LOG("Leader received a command(v: %d)", cmd.value);
+//    RAFT_LOG("Leader received a command(v: %d)", cmd.value);
     auto entry = log_entry<command>(current_term, cmd);
-    RAFT_LOG("Leader append log[term = %d, value = %d]", current_term, cmd.value);
+//    RAFT_LOG("Leader append log[term = %d, value = %d]", current_term, cmd.value);
     index = append_log(entry);
     return true;
 }
@@ -353,12 +357,13 @@ void raft<state_machine, command>::handle_request_vote_reply(int target, const r
         mtx.lock();
         if (role == candidate) {
             if (++vote_no > num / 2) {
-                RAFT_LOG("get vote: %d, has become a leader", vote_no);
+//                RAFT_LOG("get vote: %d, has become a leader", vote_no);
                 role = leader; // if surpass a half, then become the leader.
                 vote_succeed = true;
                 vote_no = 0;
                 long long curT = getCurrentTime();
                 std::fill(ping_pong.begin(), ping_pong.end(), curT);
+                std::fill(lastApply.begin(), lastApply.end(), apply_index);
                 init_next_index();
             }
         }
@@ -395,23 +400,25 @@ int raft<state_machine, command>::append_entries(append_entries_args<command> ar
                     become_follower(arg.cur_term);
                 }
                 mtx.unlock();
-                RAFT_LOG("Receive log from leader");
+//                RAFT_LOG("Receive log from leader");
                 if (accept_append(arg)) {
-                    RAFT_LOG("Accept Log");
+//                    RAFT_LOG("Accept Log");
                     append_logs(arg);
                     reply.code = 1;
                     reply.idx = logs.size() - 1;
                 } else {
-                    RAFT_LOG("Reject log");
+//                    RAFT_LOG("Reject log");
                     reply.code = -1;
                 }
                 break;
             }
             case 2: {
-                RAFT_LOG("leader told me to commit");
+//                RAFT_LOG("leader told me to commit[id = %d]", arg.idx);
                 mtx.lock();
                 commit_index = arg.idx;
                 mtx.unlock();
+                reply.code = 2;
+                reply.idx = arg.idx;
                 break;
             }
         }
@@ -433,9 +440,13 @@ void raft<state_machine, command>::handle_append_entries_reply(int target, const
 //            RAFT_LOG("Leader update nextIndex[%d] to %d", target, reply.idx + 1);
             if (ready_to_commit()) {
 //                RAFT_LOG("Leader is ready to commit");
-                notify_commit();
+//                notify_commit();
                 apply_log();
             }
+            break;
+        }
+        case 2: {
+            lastApply[target] = reply.idx;
             break;
         }
         case -1: { // append_reject
@@ -582,7 +593,7 @@ void raft<state_machine, command>::run_background_apply() {
         if (role == follower) {
             log_mtx.lock();
             if (commit_index > apply_index) {
-                RAFT_LOG("need apply (cmt_i: %d, app_i: %d)", commit_index, apply_index);
+//                RAFT_LOG("need apply (cmt_i: %d, app_i: %d)", commit_index, apply_index);
                 apply_log();
             }
             log_mtx.unlock();
@@ -626,14 +637,12 @@ template<typename state_machine, typename command>
 void raft<state_machine, command>::recover_from_logs() {
     std::list <log_entry<command>> logs;
     storage->read_logs(logs);
-    RAFT_LOG("read logs");
-    log_mtx.lock();
+//    RAFT_LOG("read logs");
     for (auto &log:logs) {
-        RAFT_LOG("apply log[term = %d, value = %d]", log.term, log.cmd.value);
+//        RAFT_LOG("apply log[term = %d, value = %d]", log.term, log.cmd.value);
         state->apply_log(log.cmd);
         this->logs.push_back(log);
     }
-    log_mtx.unlock();
 }
 
 template<typename state_machine, typename command>
@@ -737,10 +746,12 @@ void raft<state_machine, command>::check_and_send_logs() {
 
     for (int i = 0; i < num; ++i) {
         if (i != my_id) {
-            bool needSend = nextIndex[i] - 1 < commit_index;
-            if (needSend) {
+            if (nextIndex[i] - 1 < commit_index) {
 //                RAFT_LOG("Leader send entries to followers[id = %d] (commit_id = %d)", i, commit_index);
                 send_entries(i);
+            }
+            if (lastApply[i] < apply_index) {
+                notify_commit(i);
             }
         }
     }
@@ -751,12 +762,19 @@ void raft<state_machine, command>::notify_commit() {
 //    RAFT_LOG("Leader notify followers to commit (cmt_i: %d)", commit_index);
     append_entries_args<command> args(2, current_term);
     args.idx = commit_index;
-    int num = rpc_clients.size();
     for (int i = 0; i < num; ++i) {
         if (i != my_id) {
             thread_pool->addObjJob(this, &raft::send_append_entries, i, args);
         }
     }
+}
+
+template<typename state_machine, typename command>
+void raft<state_machine, command>::notify_commit(int target) {
+//    RAFT_LOG("Leader notify followers to commit (cmt_i: %d)", commit_index);
+    append_entries_args<command> args(2, current_term);
+    args.idx = commit_index;
+    thread_pool->addObjJob(this, &raft::send_append_entries, target, args);
 }
 
 template<typename state_machine, typename command>
@@ -787,7 +805,7 @@ template<typename state_machine, typename command>
 void raft<state_machine, command>::apply_log() {
     if (logs.size() > (unsigned int) commit_index) {
         for (int i = apply_index + 1; i <= commit_index; ++i) {
-            RAFT_LOG("apply log[idx = %d, term = %d, value = %d]", i, logs[i].term, logs[i].cmd.value);
+//            RAFT_LOG("apply log[idx = %d, term = %d, value = %d]", i, logs[i].term, logs[i].cmd.value);
             storage->append_log(logs[i]);
             state->apply_log(logs[i].cmd);
         }

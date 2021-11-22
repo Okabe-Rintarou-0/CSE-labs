@@ -115,7 +115,7 @@ log_entry<command> raft_storage<command>::deserialize(const std::string &str) {
     command cmd;
     int size = cmd.size();
     cmd.deserialize(str.substr(pos + 1, str.size() - pos - 1).c_str(), size);
-    std::cout << "read term: " << term << " and command: " << cmd.value << std::endl;
+//    std::cout << "read term: " << term << " and command: " << cmd.value << std::endl;
     return log_entry<command>(term, cmd);
 }
 
