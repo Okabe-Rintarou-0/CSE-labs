@@ -5,7 +5,7 @@
 #include <sstream>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <stdlib.h>
+#include <stdlib.h>  
 #include <dirent.h>
 #include <sys/times.h>
 
@@ -111,7 +111,7 @@ public:
     list_state_machine();
     virtual ~list_state_machine() {}
     virtual std::vector<char> snapshot() override;
-
+    
     virtual void apply_log(raft_command &cmd) override;
 
     virtual void apply_snapshot(const std::vector<char>&) override;
@@ -216,7 +216,7 @@ int raft_group<state_machine, command>::check_exact_one_leader() {
             int term = -1;
             bool is_leader = node->is_leader(term);
             if (is_leader) {
-                ASSERT(term > 0, "term " << term << " should not have a leader.");
+                ASSERT(term > 0, "term " << term << " should not have a leader."); 
                 ASSERT(term_leaders.find(term) == term_leaders.end(), "term " << term << " has more than one leader.");
                 term_leaders[term] = j;
             }
@@ -267,7 +267,7 @@ void raft_group<state_machine, command>::disable_node(int i) {
     rpcs* server = servers[i];
     std::vector<rpcc*> &client = clients[i];
     server->set_reachable(false);
-    for (auto c : client)
+    for (auto c : client) 
         c->set_reachable(false);
 }
 
@@ -282,7 +282,7 @@ void raft_group<state_machine, command>::enable_node(int i) {
 
 template<typename state_machine, typename command>
 int raft_group<state_machine, command>::num_committed(int log_idx) {
-    int cnt = 0;
+    int cnt = 0;    
     int old_value = 0;
     for (size_t i = 0; i < nodes.size(); i++) {
         list_state_machine *state = states[i];
@@ -321,7 +321,7 @@ int raft_group<state_machine, command>::get_committed_value(int log_idx) {
                 return log_value;
             }
         }
-    }
+    }    
     ASSERT(false, "log " << log_idx << " is not committed." );
     return -1;
 }
@@ -353,7 +353,6 @@ int raft_group<state_machine, command>::append_new_command(int value, int expect
                 if (committed_server >= expected_servers) {
                     // The log is committed!
                     int commited_value = get_committed_value(log_idx);
-                    std::cout << "committed: " << commited_value << " expect: " << value << std::endl;
                     if (commited_value == value)
                         return log_idx; // and the log is what we want!
                 }
@@ -384,7 +383,7 @@ int raft_group<state_machine, command>::wait_commit(int index, int num_committed
                 if (current_term > start_term) {
                     // someone has moved on
  					// can no longer guarantee that we'll "win"
-                    return -1;
+                    return -1; 
                 }
             }
         }
@@ -397,7 +396,7 @@ int raft_group<state_machine, command>::wait_commit(int index, int num_committed
 template<typename state_machine, typename command>
 int raft_group<state_machine, command>::rpc_count(int node) {
     int sum = 0;
-    if (node == -1) {
+    if (node == -1) {        
         for (auto &cl : clients) {
             for (auto &cc : cl) {
                 sum += cc->count();
@@ -413,7 +412,7 @@ int raft_group<state_machine, command>::rpc_count(int node) {
 
 template<typename state_machine, typename command>
 int raft_group<state_machine, command>::restart(int node) {
-     std::cout << "restart " << node << std::endl;
+    // std::cout << "restart " << node << std::endl;
     nodes[node]->stop();
     disable_node(node);
     servers[node]->unreg_all();
@@ -426,7 +425,7 @@ int raft_group<state_machine, command>::restart(int node) {
         delete cl;
     servers[node]->set_reachable(true);
     clients[node] = create_rpc_clients(servers);
-
+    
     nodes[node] = new raft<state_machine, command>(servers[node], clients[node], node, storage, states[node]);
     // disable_node(node);
     nodes[node]->start();
@@ -435,7 +434,7 @@ int raft_group<state_machine, command>::restart(int node) {
 
 template<typename state_machine, typename command>
 void raft_group<state_machine, command>::set_reliable(bool value) {
-    for (auto server : servers)
+    for (auto server : servers) 
         server->set_reliable(value);
 }
 
