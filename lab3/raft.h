@@ -177,6 +177,8 @@ private:
 
     void append_logs(const append_entries_args<command> &args);
 
+    void handle_logs(const append_entries_args<command> &args, append_entries_reply &reply);
+
     void check_and_send_logs();
 
     void notify_commit();
@@ -195,11 +197,13 @@ private:
 
     void send_entries(int target);
 
-    bool accept_append(const append_entries_args<command> &args);
+    inline bool accept_append(const append_entries_args<command> &args);
 
     void apply_log();
 
     void recover_from_logs();
+
+    void update_term(int new_term);
 
     inline void become_follower(int new_term);
 };
@@ -292,8 +296,10 @@ void raft<state_machine, command>::start() {
     // Your code here:
 
     RAFT_LOG("start");
+    log_mtx.lock();
     recover_from_logs();
     commit_index = apply_index = logs.size() - 1;
+    log_mtx.unlock();
 
     this->background_election = new std::thread(&raft::run_background_election, this);
     this->background_ping = new std::thread(&raft::run_background_ping, this);
@@ -330,12 +336,18 @@ int raft<state_machine, command>::request_vote(request_vote_args args, request_v
     // Your code here:
     bool accept = false;
     mtx.lock();
+    log_mtx.lock();
     int my_max_idx = logs.size() - 1;
     int my_max_log_term = logs[my_max_idx].term;
+    log_mtx.unlock();
     if (args.term > current_term) {
-        current_term = args.term;
+        update_term(args.term);
         accept = my_max_log_term < args.log_max_term ||
                  (my_max_log_term == args.log_max_term && my_max_idx <= args.log_max_idx);
+//        if (accept) {
+//            RAFT_LOG("accept: my_term: %d, arg_term: %d, my_id: %d, arg_id: %d", my_max_log_term, args.log_max_term,
+//                     my_max_idx, args.log_max_idx);
+//        }
         if (accept && role != follower) {
             become_follower(args.term);
         }
@@ -363,8 +375,10 @@ void raft<state_machine, command>::handle_request_vote_reply(int target, const r
                 vote_no = 0;
                 long long curT = getCurrentTime();
                 std::fill(ping_pong.begin(), ping_pong.end(), curT);
+                log_mtx.lock();
                 std::fill(lastApply.begin(), lastApply.end(), apply_index);
                 init_next_index();
+                log_mtx.unlock();
             }
         }
         mtx.unlock();
@@ -383,39 +397,29 @@ int raft<state_machine, command>::append_entries(append_entries_args<command> ar
     // Your code here:
     if (arg.cur_term >= current_term) {
         update_last_RPC_time();
+        mtx.lock();
+        if (role != follower) {
+            become_follower(arg.cur_term);
+        } else {
+            current_term = arg.cur_term;
+        }
+        mtx.unlock();
         switch (arg.action) {
             case 0: {
-                mtx.lock();
-                if (role != follower) {
-                    become_follower(arg.cur_term);
-                }
-                mtx.unlock();
                 reply.code = 0;
                 break;
             }
             case 1: {
                 ///TODO: optimize concurrency
-                mtx.lock();
-                if (role != follower) {
-                    become_follower(arg.cur_term);
-                }
-                mtx.unlock();
 //                RAFT_LOG("Receive log from leader");
-                if (accept_append(arg)) {
-//                    RAFT_LOG("Accept Log");
-                    append_logs(arg);
-                    reply.code = 1;
-                    reply.idx = logs.size() - 1;
-                } else {
-//                    RAFT_LOG("Reject log");
-                    reply.code = -1;
-                }
+                handle_logs(arg, reply);
                 break;
             }
             case 2: {
 //                RAFT_LOG("leader told me to commit[id = %d]", arg.idx);
                 mtx.lock();
-                commit_index = arg.idx;
+                if (commit_index < arg.idx)
+                    commit_index = arg.idx;
                 mtx.unlock();
                 reply.code = 2;
                 reply.idx = arg.idx;
@@ -430,27 +434,36 @@ template<typename state_machine, typename command>
 void raft<state_machine, command>::handle_append_entries_reply(int target, const append_entries_args<command> &arg,
                                                                const append_entries_reply &reply) {
     // Your code here:
+    bool isLeader;
+    mtx.lock();
+    isLeader = role == leader;
+    mtx.unlock();
+    if (!isLeader) return;
     switch (reply.code) {
         case 0: {
             ping_pong[target] = getCurrentTime();
             break;
         }
         case 1: { // append_ok
+            log_mtx.lock();
             nextIndex[target] = reply.idx + 1;
-//            RAFT_LOG("Leader update nextIndex[%d] to %d", target, reply.idx + 1);
-            if (ready_to_commit()) {
-//                RAFT_LOG("Leader is ready to commit");
-//                notify_commit();
+            if(ready_to_commit()) {
                 apply_log();
+//                RAFT_LOG("Leader is ready to commit");
             }
+            log_mtx.unlock();
             break;
         }
         case 2: {
+            log_mtx.lock();
             lastApply[target] = reply.idx;
+            log_mtx.unlock();
             break;
         }
         case -1: { // append_reject
+            log_mtx.lock();
             --nextIndex[target];
+            log_mtx.unlock();
 //            RAFT_LOG("Append reject by follower(id:%d)", target);
             break;
         }
@@ -543,8 +556,7 @@ void raft<state_machine, command>::run_background_election() {
                 if (is_timeout()) {
 //                    RAFT_LOG("time out, election failed, try again");
                     mtx.lock();
-                    role = follower;
-                    init_timeout();
+                    become_follower(current_term);
                     mtx.unlock();
                 }
                 break;
@@ -637,7 +649,9 @@ template<typename state_machine, typename command>
 void raft<state_machine, command>::recover_from_logs() {
     std::list <log_entry<command>> logs;
     storage->read_logs(logs);
+    current_term = storage->read_term();
 //    RAFT_LOG("read logs");
+//    RAFT_LOG("read term: %d", current_term);
     for (auto &log:logs) {
 //        RAFT_LOG("apply log[term = %d, value = %d]", log.term, log.cmd.value);
         state->apply_log(log.cmd);
@@ -650,7 +664,7 @@ void raft<state_machine, command>::start_election() {
 //    RAFT_LOG("start election");
     mtx.lock();
     vote_no = 1;
-    ++current_term;
+    update_term(current_term + 1);
     role = candidate;
     timeout = 1000;
     int log_max_idx = logs.size() - 1;
@@ -688,13 +702,30 @@ int raft<state_machine, command>::append_log(const log_entry<command> &log) {
 
 template<typename state_machine, typename command>
 void raft<state_machine, command>::append_logs(const append_entries_args<command> &args) {
-    log_mtx.lock();
     logs.resize(args.idx + 1);
     for (const auto &log:args.entries) {
         this->logs.push_back(log);
 //        RAFT_LOG("Follower append log[term = %d, value = %d]", log.term, log.cmd.value);
     }
+}
+
+template<typename state_machine, typename command>
+bool raft<state_machine, command>::accept_append(const append_entries_args<command> &args) {
+    int last_idx = args.idx;
+//    RAFT_LOG("last_idx: %d last_term: %d mylastterm: %d", last_idx, args.last_term, logs[last_idx].term);
+    return last_idx == 0 || (logs.size() > (unsigned int) last_idx && logs[last_idx].term == args.last_term);
+}
+
+template<typename state_machine, typename command>
+void raft<state_machine, command>::handle_logs(const append_entries_args<command> &args, append_entries_reply &reply) {
+    bool accept;
+    log_mtx.lock();
+    if ((accept = accept_append(args))) {
+        append_logs(args);
+    }
+    reply.idx = logs.size() - 1;
     log_mtx.unlock();
+    reply.code = accept ? 1 : -1;
 }
 
 template<typename state_machine, typename command>
@@ -711,17 +742,6 @@ bool raft<state_machine, command>::is_timeout() {
     bool ret = current_time - last_received_RPC_time > timeout;
     t_mtx.unlock();
     return ret;
-}
-
-template<typename state_machine, typename command>
-bool raft<state_machine, command>::accept_append(const append_entries_args<command> &args) {
-    int last_idx = args.idx;
-    bool accept;
-    log_mtx.lock();
-//    RAFT_LOG("last_idx: %d last_term: %d mylastterm: %d", last_idx, args.last_term, logs[last_idx].term);
-    accept = last_idx == 0 || (logs.size() > (unsigned int) last_idx && logs[last_idx].term == args.last_term);
-    log_mtx.unlock();
-    return accept;
 }
 
 template<typename state_machine, typename command>
@@ -751,6 +771,7 @@ void raft<state_machine, command>::check_and_send_logs() {
                 send_entries(i);
             }
             if (lastApply[i] < apply_index) {
+//                RAFT_LOG("lastApply[%d] = %d, notify commit", i, lastApply[i]);
                 notify_commit(i);
             }
         }
@@ -817,15 +838,22 @@ template<typename state_machine, typename command>
 void raft<state_machine, command>::become_follower(int new_term) {
     raft_role old_role = role;
     role = follower;
-    current_term = new_term;
+    if (current_term < new_term)
+        update_term(new_term);
+    vote_no = 0;
     if (old_role == candidate) {
         init_timeout();
-        vote_no = 0;
     } else {
         log_mtx.lock();
         commit_index = apply_index;
         log_mtx.unlock();
     }
+}
+
+template<typename state_machine, typename command>
+void raft<state_machine, command>::update_term(int new_term) {
+    current_term = new_term;
+    storage->store_metadata(new_term);
 }
 
 

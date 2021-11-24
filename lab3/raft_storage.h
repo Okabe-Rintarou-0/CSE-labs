@@ -21,6 +21,10 @@ public:
 
     void read_logs(std::list <log_entry<command>> &logs);
 
+    void store_metadata(int term);
+
+    int read_term();
+
 private:
     static const std::string log_file;
     static const std::string meta_file;
@@ -45,7 +49,7 @@ template<typename command>
 raft_storage<command>::raft_storage(const std::string &dir): base_dir(dir) {
     // Your code here
     log_ofs.open(base_dir + log_file, std::ios::app);
-    meta_ofs.open(base_dir + meta_file, std::ios::app);
+//    meta_ofs.open(base_dir + meta_file, std::ios::trunc);
 }
 
 template<typename command>
@@ -69,6 +73,24 @@ void raft_storage<command>::append_log(const log_entry<command> &log) {
 //    std::cout << std::endl;
     log_mtx.unlock();
     delete serialize_log;
+}
+
+template<typename command>
+void raft_storage<command>::store_metadata(int term) {
+    meta_ofs.open(base_dir + meta_file, std::ios::trunc);
+    meta_ofs << "term" << ":" << term << std::endl;
+    meta_ofs.close();
+}
+
+template<typename command>
+int raft_storage<command>::read_term() {
+    meta_ifs.open(base_dir + meta_file);
+    std::string line;
+    getline(meta_ifs, line);
+//    std::cout << "read line: " << line << std::endl;
+    int pos = line.find_first_of(":");
+    std::string termStr = line.substr(pos + 1, line.size() - pos - 1);
+    return atoi(termStr.c_str());
 }
 
 template<typename command>
