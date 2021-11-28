@@ -2,7 +2,6 @@
 #define raft_protocol_h
 
 #include "rpc.h"
-#include <vector>
 #include "raft_state_machine.h"
 
 enum raft_rpc_opcodes {
@@ -23,12 +22,16 @@ class request_vote_args {
 public:
     // Your code here
     int term;
-    int log_max_idx;
-    int log_max_term;
+    int candidateId;
+    int lastLogIndex;
+    int lastLogTerm;
 
     request_vote_args() = default;
 
-    request_vote_args(int term, int m_idx, int m_term) : term(term), log_max_idx(m_idx), log_max_term(m_term) {}
+    request_vote_args(int term, int candidateId, int lastLogIndex, int lastLogTerm) : term(term),
+                                                                                      candidateId(candidateId),
+                                                                                      lastLogIndex(lastLogIndex),
+                                                                                      lastLogTerm(lastLogTerm) {}
 };
 
 marshall &operator<<(marshall &m, const request_vote_args &args);
@@ -39,7 +42,12 @@ unmarshall &operator>>(unmarshall &u, request_vote_args &args);
 class request_vote_reply {
 public:
     // Your code here
-    int accept;
+    int term;
+    int voteGranted;
+
+    request_vote_reply() = default;
+
+    request_vote_reply(int term, int voteGranted) : term(term), voteGranted(voteGranted) {}
 };
 
 marshall &operator<<(marshall &m, const request_vote_reply &reply);
@@ -49,13 +57,13 @@ unmarshall &operator>>(unmarshall &u, request_vote_reply &reply);
 template<typename command>
 class log_entry {
 public:
-    int term;
+    // Your code here
+    int term = 0;
     command cmd;
 
     log_entry() = default;
 
     log_entry(int term, command cmd) : term(term), cmd(cmd) {}
-    // Your code here
 };
 
 template<typename command>
@@ -70,64 +78,60 @@ unmarshall &operator>>(unmarshall &u, log_entry<command> &entry) {
     return u >> entry.term >> entry.cmd;
 }
 
-/**
- * action = 0 ping
- * 1 append
- * 2 commit
- */
 template<typename command>
 class append_entries_args {
 public:
-    int action;
-    int cur_term;
-    int last_term;
-    int idx;
+    // Your code here
+    int term;
+    int leaderId;
+    int prevLogIndex;
+    int prevLogTerm;
     std::vector <log_entry<command>> entries;
+
+    int leaderCommit;
 
     append_entries_args() = default;
 
-    append_entries_args(int action, int cur_term) : action(action), cur_term(cur_term) {}
+    append_entries_args(int term, int leaderId, int prevLogIndex, int prevLogTerm,
+                        const std::vector <log_entry<command>> &entries, int leaderCommit) : term(term),
+                                                                                             leaderId(leaderId),
+                                                                                             prevLogIndex(prevLogIndex),
+                                                                                             prevLogTerm(prevLogTerm),
+                                                                                             entries(entries),
+                                                                                             leaderCommit(
+                                                                                                     leaderCommit) {}
 
-    append_entries_args(int action, int cur_term, int last_term, int idx, std::vector <log_entry<command>> entries)
-            : action(action), cur_term(cur_term), last_term(last_term), idx(idx), entries(entries) {}
-
-    inline bool isEmpty() const {
-        return entries.empty();
-    }
-
-    inline void appendCmd(const command &cmd, int term) {
-        entries.push_back(log_entry<command>(cmd, term));
-    }
-    // Your code here
+    append_entries_args(int term, int leaderId, int leaderCommit) : term(term),
+                                                                    leaderId(leaderId),
+                                                                    entries(std::vector<log_entry<command>>()),
+                                                                    leaderCommit(leaderCommit) {}
 };
 
 template<typename command>
 marshall &operator<<(marshall &m, const append_entries_args<command> &args) {
     // Your code here
-    return m << args.action << args.cur_term << args.last_term << args.idx << args.entries;
+    return m << args.term << args.leaderId << args.prevLogIndex << args.prevLogTerm << args.entries
+             << args.leaderCommit;
 }
 
 template<typename command>
 unmarshall &operator>>(unmarshall &u, append_entries_args<command> &args) {
     // Your code here
-    return u >> args.action >> args.cur_term >> args.last_term >> args.idx >> args.entries;
+    return u >> args.term >> args.leaderId >> args.prevLogIndex >> args.prevLogTerm >> args.entries
+             >> args.leaderCommit;
 }
 
-/**
- * code = -1 not ok
- * code = 0 ping
- * code = 1 append_ok
- */
 class append_entries_reply {
 public:
     // Your code here
-    int code;
-    int idx;
+    int term;
+    int success;
 };
 
 marshall &operator<<(marshall &m, const append_entries_reply &reply);
 
-unmarshall &operator>>(unmarshall &u, append_entries_reply &reply);
+unmarshall &operator>>(unmarshall &m, append_entries_reply &reply);
+
 
 class install_snapshot_args {
 public:

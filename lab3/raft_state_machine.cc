@@ -15,10 +15,10 @@ kv_command::kv_command(const kv_command &cmd) :
 
 kv_command::~kv_command() {}
 
-// [type]:0[key]:123[value]:123
+// type:2 key:k3 value:v30
 int kv_command::size() const {
     // Your code here:
-    return key.size() + value.size() + 22;
+    return key.size() + value.size() + 18;
 }
 
 
@@ -30,7 +30,11 @@ void kv_command::serialize(char *buf, int size) const {
 void kv_command::deserialize(const char *buf, int size) {
     // Your code here:
     char key_buf[100], val_buf[100];
-    sscanf(buf, "type:%d key:%s value:%s", (int *) &cmd_tp, key_buf, val_buf);
+    int tp;
+//    std::cout << "tgt: " << buf << std::endl;
+    sscanf(buf, "type:%d key:%s value:%s", &tp, key_buf, val_buf);
+//    std::cout << "get type: " << tp << " key: " << key_buf << " value: " << val_buf << std::endl;
+    cmd_tp = (command_type) tp;
     key = key_buf;
     value = val_buf;
 }
@@ -66,6 +70,7 @@ void kv_state_machine::apply_log(raft_command &cmd) {
         }
         case kv_command::CMD_DEL: {
             std::string val = del(kv_cmd.key);
+//            std::cout << "do del[" << kv_cmd.key << "] = " << val << std::endl;
             kv_cmd.res->value = val;
             kv_cmd.res->succ = !val.empty();
             break;
@@ -74,6 +79,8 @@ void kv_state_machine::apply_log(raft_command &cmd) {
             std::string val = get(kv_cmd.key);
 //            std::cout << "do get[" << kv_cmd.key << "] = " << val << std::endl;
             kv_cmd.res->value = val;
+//            if (val.empty())
+//                std::cout << "can't get[" << kv_cmd.key << "] = " << val << std::endl;
             kv_cmd.res->succ = !val.empty();
             break;
         }

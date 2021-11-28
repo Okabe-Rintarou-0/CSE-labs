@@ -9,6 +9,24 @@
 #include <fstream>
 #include <string>
 
+enum actionType {
+    APPEND, APPLY
+};
+
+template<typename command>
+struct action {
+    action() = default;
+
+    action(actionType actionType, int index) : type(actionType), index(index) {}
+
+    action(actionType actionType, int index, const log_entry<command> &log) : type(actionType), index(index),
+                                                                              log(log) {}
+
+    actionType type;
+    int index;
+    log_entry<command> log;
+};
+
 template<typename command>
 class raft_storage {
 public:
@@ -17,9 +35,11 @@ public:
     ~raft_storage();
 
     // Your code here
-    void append_log(const log_entry<command> &log);
+    void append_log(int index, const log_entry<command> &log);
 
-    void read_logs(std::list <log_entry<command>> &logs);
+    void apply_log(int index);
+
+    void read_logs(std::list <action<command>> &actions);
 
     void store_metadata(int term);
 
@@ -42,7 +62,7 @@ private:
     // user should free the space allocated
     inline char *serialize(const log_entry<command> &log, int &str_size);
 
-    inline log_entry<command> deserialize(const std::string &str);
+    inline action<command> deserialize(const std::string &str);
 };
 
 template<typename command>
@@ -60,10 +80,11 @@ raft_storage<command>::~raft_storage() {
 }
 
 template<typename command>
-void raft_storage<command>::append_log(const log_entry<command> &log) {
+void raft_storage<command>::append_log(int index, const log_entry<command> &log) {
     log_mtx.lock();
     int size;
     char *serialize_log = serialize(log, size);
+    log_ofs << "[APPEND] " << "index: " << index << " ";
 //    std::cout << "append log: ";
     for (int i = 0; i < size; ++i) {
         log_ofs << serialize_log[i];
@@ -73,6 +94,13 @@ void raft_storage<command>::append_log(const log_entry<command> &log) {
 //    std::cout << std::endl;
     log_mtx.unlock();
     delete serialize_log;
+}
+
+template<typename command>
+void raft_storage<command>::apply_log(int index) {
+    log_mtx.lock();
+    log_ofs << "[APPLY] " << "index: " << index << std::endl;
+    log_mtx.unlock();
 }
 
 template<typename command>
@@ -94,13 +122,14 @@ int raft_storage<command>::read_term() {
 }
 
 template<typename command>
-void raft_storage<command>::read_logs(std::list <log_entry<command>> &logs) {
+void raft_storage<command>::read_logs(std::list <action<command>> &actions) {
     log_ifs.open(base_dir + log_file);
     std::string line;
     while (getline(log_ifs, line)) {
         if (line.empty())
             break;
-        logs.push_back(deserialize(line));
+//        std::cout << "read line: " << line << std::endl;
+        actions.push_back(deserialize(line));
     }
     log_ifs.close();
 }
@@ -131,14 +160,37 @@ char *raft_storage<command>::serialize(const log_entry<command> &log, int &str_s
 }
 
 template<typename command>
-log_entry<command> raft_storage<command>::deserialize(const std::string &str) {
-    int pos = str.find_first_of(":");
-    int term = atoi(str.substr(0, pos).c_str());
-    command cmd;
-    int size = cmd.size();
-    cmd.deserialize(str.substr(pos + 1, str.size() - pos - 1).c_str(), size);
+action<command> raft_storage<command>::deserialize(const std::string &str) {
+    int len = str.size();
+    if (str.find("[APPEND]") != std::string::npos) {
+        int pos1 = str.find("index") + 7;
+        std::string index;
+        for (; pos1 < len; ++pos1) {
+            if (str[pos1] == ' ')
+                break;
+            index += str[pos1];
+        }
+        pos1 += 1;
+        int pos2 = str.find_first_of(":", pos1);
+        int term = atoi(str.substr(pos1, pos2 - pos1).c_str());
+        command cmd;
+        int size = cmd.size();
+        cmd.deserialize(str.substr(pos2 + 1, len - pos2 - 1).c_str(), size);
+//        printf("read log from disk[term = %d, value = %d, index = %s]\n", term, cmd.value, index.c_str());
+        return action<command>(APPEND, atoi(index.c_str()), log_entry<command>(term, cmd));
+    } else if (str.find("[APPLY]") != std::string::npos) {
+        int pos1 = str.find("index") + 7;
+        std::string index;
+        for (; pos1 < len; ++pos1) {
+            if (str[pos1] == ' ')
+                break;
+            index += str[pos1];
+        }
+//        printf("Read apply[index = %s]\n", index.c_str());
+        return action<command>(APPLY, atoi(index.c_str()));
+    }
 //    std::cout << "read term: " << term << " and command: " << cmd.value << std::endl;
-    return log_entry<command>(term, cmd);
+    return action<command>();
 }
 
 #endif // raft_storage_h

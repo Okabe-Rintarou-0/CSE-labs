@@ -21,7 +21,7 @@ raft_test_case() {
     echo "Pass " $1"."$2;
 	score=$((score+$3))
 }
-
+raft_test_case part3 persist2 5
 raft_test_case part1 leader_election 10
 raft_test_case part1 re_election 10
 raft_test_case part2 basic_agree 10
