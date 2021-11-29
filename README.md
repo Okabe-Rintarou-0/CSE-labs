@@ -8,7 +8,7 @@ labs of CSE. From lesson SE124.
 | -------------- | -------------------------------------------- | ------------------------------------------------------------ |
 | [Lab1](./lab1) | [Basic File System](./notes/Lab1.md)         | A basic file system that will be used in later labs.         |
 | [Lab2](./lab2) | [Word Count with MapReduce](./notes/Lab2.md) | Use MapReduce to count word frequency based on distributed fs. |
-| [Lab3](./lab3) | [Raft](./notes/Lab3.md) | A powerful protocol of distribution system. Easier to understand than Paxos. |
+| [Lab3](./lab3) | [Raft](./notes/Lab3.md) | A powerful protocol of distributed system. Easier to understand than Paxos. |
 
 ### Exams
 
