@@ -10,11 +10,21 @@ labs of CSE. From lesson SE124.
 | [Lab2](./lab2) | [Word Count with MapReduce](./notes/Lab2.md) | Use MapReduce to count word frequency based on distributed fs. |
 | [Lab3](./lab3) | [Raft](./notes/Lab3.md) | A powerful protocol of distributed system. Easier to understand than Paxos. |
 
+### Hands-on
+
+| Hands-on                          | specification                            | solution                                       |
+| --------------------------------- | ---------------------------------------- | ---------------------------------------------- |
+| [Hands-on-1](./handson/Handson-1) | [spec](./handson/Handson-1/handson1.pdf) | [solution](./handson/Handson-1/Hands-on_1.pdf) |
+| [Hands-on-2](./handson/Handson-2) | [spec](./handson/Handson-2/handson2.pdf) | [solution](./handson/Handson-2/Hands-on_2.pdf) |
+| [Hands-on-3](./handson/Handson-3) | [spec](./handson/Handson-3/handson3.pdf) | [solution](./handson/Handson-3/Hands-on_3.pdf) |
+
+
+
 ### Exams
 
 | Exam        | Solution                                        | Remarks                                                      |
 | -------------- | -------------------------------------------- | ------------------------------------------------------------ |
-| [2020 Mid Term](./exams/2020-CSE-midterm.pdf) | [2020 Mid Term Solution](./exams/2020-CSE-midterm-sol.pdf)         |          |
+| [2020 Mid Term](./exams/2020-CSE-midterm.pdf) | [2020 Mid Term Solution](./exams/2020-CSE-midterm-sol.pdf)         | Just for reference. |
 
 ### Review Notes
 
