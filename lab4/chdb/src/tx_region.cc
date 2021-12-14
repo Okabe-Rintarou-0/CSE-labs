@@ -67,6 +67,17 @@ int tx_region::tx_begin() {
 int tx_region::tx_commit() {
     // TODO: Your code here
     printf("tx[%d] commit\n", tx_id);
+
+    // Then all the shards should commit.
+    for (action act:actions) {
+        int r;
+        if (act.type == action::PUT) {
+            this->db->vserver->commit(act.key, chdb_protocol::Commit,
+                                      chdb_protocol::commit_var{.tx_id = tx_id},
+                                      r);
+        }
+    }
+
     return 0;
 }
 

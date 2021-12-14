@@ -79,7 +79,7 @@ public:
 
     virtual void serialize(char *buf, int size) const override;
 
-    virtual void deserialize(const char *buf, int size);
+    virtual void deserialize(const char *buf, int size) override;
 };
 
 marshall &operator<<(marshall &m, const kv_command &cmd);

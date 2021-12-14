@@ -17,6 +17,9 @@ public:
  * Storage layer for each shard. Support fault tolerance.
  * */
 class shard_client {
+private:
+    void backup();
+
 public:
     shard_client(const int shard_id, const int port) : active(true),
                                                        shard_id(shard_id),

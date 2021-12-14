@@ -74,6 +74,12 @@ public:
              const chdb_protocol::rollback_var &var,
              int &r);
 
+    int
+    commit(unsigned int query_key,
+             unsigned int proc,
+             const chdb_protocol::commit_var &var,
+             int &r);
+
     ~view_server();
 
 };

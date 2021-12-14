@@ -17,8 +17,8 @@ public:
         int key, value, tx_id;
         command_type tp;
 
-        bool done;
         bool succ;
+        bool done = false;
         std::mutex mtx; // protect the struct
         std::condition_variable cv; // notify the caller
     };
@@ -43,7 +43,7 @@ public:
 
     virtual void serialize(char *buf, int size) const override;
 
-    virtual void deserialize(const char *buf, int size);
+    virtual void deserialize(const char *buf, int size) override;
 };
 
 marshall &operator<<(marshall &m, const chdb_command &cmd);

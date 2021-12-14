@@ -11,23 +11,24 @@ int view_server::execute(unsigned int query_key, unsigned int proc, const chdb_p
             cmd_type = chdb_command::CMD_PUT;
             break;
         default:
-            chdb_command::CMD_NONE;
+            cmd_type = chdb_command::CMD_NONE;
             break;
     }
 
-//    printf("Append raft cmd.\n");
-//    chdb_command cmd(cmd_type, var.key, var.value, var.tx_id);
-//    int leader = raft_group->check_exact_one_leader();
-//    int term, index;
-//    ASSERT(raft_group->nodes[leader]->new_command(cmd, term, index), "invalid leader");
-//    std::unique_lock <std::mutex> lock(cmd.res->mtx);
-//    if (!cmd.res->done) {
-//        if (cmd.res->cv.wait_until(lock, std::chrono::system_clock::now() + std::chrono::milliseconds(2500)) ==
-//            std::cv_status::timeout) {
-//            printf("Timeout!\n");
-//        }
-//    }
-//    printf("Append finish.\n");
+    printf("Append raft cmd.\n");
+    chdb_command cmd(cmd_type, var.key, var.value, var.tx_id);
+    int term, index;
+    ASSERT(leader()->new_command(cmd, term, index), "invalid leader");
+    {
+        std::unique_lock <std::mutex> lock(cmd.res->mtx);
+        while (!cmd.res->done) {
+            if (cmd.res->cv.wait_until(lock, std::chrono::system_clock::now() + std::chrono::milliseconds(2500)) ==
+                std::cv_status::timeout) {
+                printf("Timeout!\n");
+            }
+        }
+    }
+    printf("Append finish.\n");
 
     int base_port = this->node->port();
     int shard_offset = this->dispatch(query_key, shard_num());
@@ -43,6 +44,13 @@ int view_server::prepare(unsigned int query_key, unsigned int proc, const chdb_p
 }
 
 int view_server::rollback(unsigned int query_key, unsigned int proc, const chdb_protocol::rollback_var &var, int &r) {
+    int base_port = this->node->port();
+    int shard_offset = this->dispatch(query_key, shard_num());
+
+    return this->node->template call(base_port + shard_offset, proc, var, r);
+}
+
+int view_server::commit(unsigned int query_key, unsigned int proc, const chdb_protocol::commit_var &var, int &r) {
     int base_port = this->node->port();
     int shard_offset = this->dispatch(query_key, shard_num());
 

@@ -72,12 +72,17 @@ private:
     const int tx_id;
 
     struct action {
-        action(int key) : key(key) {}
+        enum actionType {
+            PUT, GET
+        };
 
-        action(int key, int val) : key(key), val(val) {}
+        action(int key) : type(GET), key(key) {}
+
+        action(int key, int val) : type(PUT), key(key), val(val) {}
 
         action() = default;
 
+        actionType type;
         int key;
         int val;
     };

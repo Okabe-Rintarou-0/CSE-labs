@@ -18,6 +18,9 @@ int shard_client::get(chdb_protocol::operation_var var, int &r) {
 
 int shard_client::commit(chdb_protocol::commit_var var, int &r) {
     // TODO: Your code here
+
+    // do backup
+    backup();
     return 0;
 }
 
@@ -41,4 +44,12 @@ int shard_client::prepare(chdb_protocol::prepare_var var, int &r) {
 
 shard_client::~shard_client() {
     delete node;
+}
+
+void shard_client::backup() {
+    const auto &st = get_store();
+    for (int i = 0; i < store.size(); ++i) {
+        if (i != primary_replica)
+            store[i] = st;
+    }
 }

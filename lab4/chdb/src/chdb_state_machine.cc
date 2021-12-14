@@ -1,6 +1,6 @@
 #include "chdb_state_machine.h"
 
-chdb_command::chdb_command() {
+chdb_command::chdb_command() : chdb_command(CMD_NONE, 0, 0, 0) {
     // TODO: Your code here
 }
 
@@ -80,10 +80,8 @@ unmarshall &operator>>(unmarshall &u, chdb_command &cmd) {
 void chdb_state_machine::apply_log(raft_command &cmd) {
     // TODO: Your code here
     chdb_command &chdb_cmd = dynamic_cast<chdb_command &>(cmd);
-    printf("try to apply\n");
     std::unique_lock <std::mutex> lock(chdb_cmd.res->mtx);
     // Your code here:
-    printf("got a lock\n");
     switch (chdb_cmd.cmd_tp) {
         case chdb_command::CMD_PUT: {
             put(chdb_cmd.key, chdb_cmd.value);
@@ -104,7 +102,6 @@ void chdb_state_machine::apply_log(raft_command &cmd) {
             break;
         }
     }
-    printf("applied\n");
     chdb_cmd.res->key = chdb_cmd.key;
     chdb_cmd.res->done = true;
     chdb_cmd.res->cv.notify_all();

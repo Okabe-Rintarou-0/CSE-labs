@@ -285,7 +285,7 @@ bool raft<state_machine, command>::new_command(command cmd, int &term, int &inde
     // Your code here:
     std::lock_guard <std::mutex> lock(mtx);
     if (role != leader) return false;
-    RAFT_LOG("leader receive a command[value = %d]", cmd.value);
+//    RAFT_LOG("leader receive a command[value = %d]", cmd.value);
     term = current_term;
 //    RAFT_LOG("Leader append log[value = %d]", cmd.value);
     index = logs.size();
@@ -348,7 +348,7 @@ void raft<state_machine, command>::handle_request_vote_reply(int target, const r
 //        RAFT_LOG("get vote from %d", target);
         if (role == candidate) {
             if (++voteNumber > num / 2) {
-                RAFT_LOG("get vote: %d, has become a leader", voteNumber);
+//                RAFT_LOG("get vote: %d, has become a leader", voteNumber);
                 role = leader; // if surpass a half, then become the leader.
                 init_after_become_leader();
                 ping();
@@ -581,7 +581,7 @@ void raft<state_machine, command>::run_background_apply() {
         mtx.lock();
         if (commitIndex > lastApplied) {
             ++lastApplied;
-            RAFT_LOG("apply log[id = %d, value = %d]", lastApplied, logs[lastApplied].cmd.value);
+//            RAFT_LOG("apply log[id = %d, value = %d]", lastApplied, logs[lastApplied].cmd.value);
             storage->apply_log(lastApplied);
             state->apply_log(logs[lastApplied].cmd);
         }
