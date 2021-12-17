@@ -17,7 +17,7 @@ labs of CSE. From lesson SE124.
 | --------------------------------- | ---------------------------------------- | ---------------------------------------------- |
 | [Hands-on-1](./handson/Handson-1) | [spec](./handson/Handson-1/handson1.pdf) | [solution](./handson/Handson-1/Hands-on_1.pdf) |
 | [Hands-on-2](./handson/Handson-2) | [spec](./handson/Handson-2/handson2.pdf) | [solution](./handson/Handson-2/Hands-on_2.pdf) |
-| [Hands-on-3](./handson/Handson-3) | [spec](./handson/Handson-3/handson3.pdf) | [solution](./handson/Handson-3/Hands-on_3.pdf) |
+| [Hands-on-3](./handson/Handson-3) | [spec](./handson/Handson-3/handson3.pdf) | [solution](./handson/Handson-3/Hands-on-3%20Domain%20Name%20Service%20(DNS).md) |
 
 
 
