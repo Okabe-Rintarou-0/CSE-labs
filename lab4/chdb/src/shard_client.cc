@@ -18,7 +18,6 @@ int shard_client::get(chdb_protocol::operation_var var, int &r) {
 
 int shard_client::commit(chdb_protocol::commit_var var, int &r) {
     // TODO: Your code here
-
     // do backup
     backup();
     return 0;

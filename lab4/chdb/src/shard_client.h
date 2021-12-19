@@ -85,9 +85,9 @@ public:
         return this->store[primary_replica];
     }
 
+    bool active;
     int shard_id;
     int view_server_port;
-    bool active;
     rpc_node *node;
     std::vector <std::map<int, value_entry>> store;
     int primary_replica = 0;
