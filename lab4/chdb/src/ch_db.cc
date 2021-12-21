@@ -15,7 +15,7 @@ int view_server::execute(unsigned int query_key, unsigned int proc, const chdb_p
             break;
     }
 
-    printf("Append raft cmd.\n");
+//    printf("Append raft cmd.\n");
     chdb_command cmd(cmd_type, var.key, var.value, var.tx_id);
     int term, index;
     ASSERT(leader()->new_command(cmd, term, index), "invalid leader");
@@ -28,7 +28,7 @@ int view_server::execute(unsigned int query_key, unsigned int proc, const chdb_p
             }
         }
     }
-    printf("Append finish.\n");
+//    printf("Append finish.\n");
 
     int base_port = this->node->port();
     int shard_offset = this->dispatch(query_key, shard_num());
@@ -62,5 +62,4 @@ view_server::~view_server() {
     delete this->raft_group;
 #endif
     delete this->node;
-
 }

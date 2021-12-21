@@ -3,26 +3,32 @@
 
 int tx_region::put(const int key, const int val) {
     // TODO: Your code here
+#if !BIG_LOCK
+    try_lock(key);
+#endif
     int r;
     this->actions.push_back(action(key, val));
     this->db->vserver->execute(key,
                                chdb_protocol::Put,
                                chdb_protocol::operation_var{.tx_id = tx_id, .key = key, .value = val},
                                r);
-    printf("Put store[%d]=%d\n", key, val);
+//    printf("Put store[%d]=%d\n", key, val);
     read_only = false;
     return r;
 }
 
 int tx_region::get(const int key) {
     // TODO: Your code here
+#if !BIG_LOCK
+    try_lock(key);
+#endif
     int r;
     this->actions.push_back(action(key));
     this->db->vserver->execute(key,
                                chdb_protocol::Get,
                                chdb_protocol::operation_var{.tx_id = tx_id, .key = key},
                                r);
-    printf("Get store[%d]=%d\n", key, r);
+//    printf("Get store[%d]=%d\n", key, r);
     return r;
 }
 
@@ -61,6 +67,9 @@ int tx_region::tx_can_commit() {
 int tx_region::tx_begin() {
     // TODO: Your code here
     printf("tx[%d] begin\n", tx_id);
+#if BIG_LOCK
+    db->lock();
+#endif
     return 0;
 }
 
@@ -85,4 +94,29 @@ int tx_region::tx_abort() {
     // TODO: Your code here
     printf("tx[%d] abort\n", tx_id);
     return 0;
+}
+
+void tx_region::tx_end() {
+#if BIG_LOCK
+    db->unlock();
+#else
+    for (auto key:heldLock) {
+        unlock(key);
+    }
+#endif
+}
+
+void tx_region::try_lock(int key) {
+    if (heldLock.find(key) != heldLock.end()) return;
+
+    while (!db->try_lock(key, tx_id));
+    heldLock.insert(key);
+//    printf("get lock of key: %d\n", key);
+}
+
+void tx_region::unlock(int key) {
+    assert(heldLock.find(key) != heldLock.end());
+
+    db->unlock(key);
+//    printf("release lock of key: %d\n", key);
 }

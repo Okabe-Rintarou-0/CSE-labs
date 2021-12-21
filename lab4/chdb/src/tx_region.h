@@ -14,6 +14,7 @@ public:
     ~tx_region() {
         if (this->tx_can_commit() == chdb_protocol::prepare_ok) this->tx_commit();
         else this->tx_abort();
+        this->tx_end();
     }
 
     /**
@@ -66,7 +67,13 @@ private:
      * */
     int tx_abort();
 
+    void tx_end();
+
     void rollback();
+
+    void try_lock(int key);
+
+    void unlock(int key);
 
     chdb *db;
     const int tx_id;
@@ -89,5 +96,6 @@ private:
 
     bool read_only = true;
 
+    std::set<int> heldLock;
     std::vector <action> actions;
 };

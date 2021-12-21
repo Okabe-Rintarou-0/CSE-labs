@@ -7,7 +7,6 @@
 #include <thread>
 #include <ctime>
 #include <algorithm>
-#include <thread>
 #include <stdarg.h>
 
 #include "rpc.h"

@@ -3,7 +3,7 @@
 
 #include "common.h"
 #include "shard_client.h"
-
+#include <chrono>
 
 using shard_dispatch = int (*)(int key, int shard_num);
 using chdb_raft = raft<chdb_state_machine, chdb_command>;
@@ -76,9 +76,9 @@ public:
 
     int
     commit(unsigned int query_key,
-             unsigned int proc,
-             const chdb_protocol::commit_var &var,
-             int &r);
+           unsigned int proc,
+           const chdb_protocol::commit_var &var,
+           int &r);
 
     ~view_server();
 
@@ -90,6 +90,21 @@ public:
  * */
 class chdb {
 public:
+    struct Lock {
+        inline void lock(int holder_tx_id) {
+            mtx.lock();
+            this->holder_tx_id = holder_tx_id;
+        }
+
+        inline void unlock() {
+            mtx.unlock();
+            holder_tx_id = -1;
+        }
+
+        std::mutex mtx;
+        int holder_tx_id = -1;
+    };
+
     chdb(const int shard_num, const int cluster_port, shard_dispatch dispatch = default_dispatch)
             : max_tx_id(0),
               vserver(new view_server(cluster_port, dispatch)) {
@@ -98,6 +113,38 @@ public:
             vserver->add_shard_client(shard);
             this->shards.push_back(shard);
         }
+    }
+
+    inline bool try_lock(int key, int tx_id) {
+        map_mtx.lock();
+        auto &lock = locks[key];
+        bool succ = tx_id > lock.holder_tx_id;
+        map_mtx.unlock();
+        if (succ) {
+            lock.lock(tx_id);
+        } else {
+            int randomSleepTime = randRange(50, 100);
+            printf("[tx_id=%d]:Sleep for %d ms\n", tx_id, randomSleepTime);
+            std::this_thread::sleep_for(std::chrono::milliseconds(randomSleepTime));
+        }
+
+        return succ;
+    }
+
+    inline void unlock(int key) {
+        map_mtx.lock();
+        auto &lock = locks[key];
+        map_mtx.unlock();
+        lock.unlock();
+    }
+
+    // naive big lock
+    inline void lock() {
+        tx_mtx.lock();
+    }
+
+    inline void unlock() {
+        tx_mtx.unlock();
     }
 
     ~chdb() {
@@ -147,6 +194,12 @@ public:
     std::vector<shard_client *> shards;
     int max_tx_id;
     std::mutex tx_id_mtx;
+
+    std::mutex tx_mtx;
+
+    std::mutex map_mtx;
+
+    std::map<int, Lock> locks;
 
 private:
     static int default_dispatch(const int key, int shard_num) {
