@@ -1,4 +1,4 @@
-CSE期末复习
+# CSE期末复习
 
 ## 特别鸣谢
 
@@ -8,6 +8,11 @@ CSE期末复习
 
 + 注意到数据库中提到的address应该是指偏移量之类的，而不是真实的物理地址。
 + 在信息安全等级保护工作中，根据信息系统的机密性（Confidentiality）、完整性（Integrity）、可用性（Availability）来划分信息系统的安全等级，三个性质简称CIA。
++ 安全的几个原则：
+  + 不要给予一个服务或者软件太高的权限，尤其是不能是root权限；<img src="CSE期末复习笔记.assets/image-20211230163213587.png" alt="image-20211230163213587" style="zoom:50%;" />
+  + 不要过分信赖一个东西。但是也要有一个基本的信任单元（比如硬件层面）<img src="CSE期末复习笔记.assets/image-20211230163527736.png" alt="image-20211230163527736" style="zoom:50%;" />
+  + 人往往是系统中最脆弱最易错的一环（比如钓鱼攻击）我们的威胁模型不能认定用户是完美的，应该假定用户是非常容易犯错的；<img src="CSE期末复习笔记.assets/image-20211230163601598.png" alt="image-20211230163601598" style="zoom:50%;" />
+  + CIA三者是很难同时实现的，本身是一个tradeoff。比如你要实现三备份虽然提升了容错，但是降低了安全性；为了提升安全性牺牲了可用性甚至导致系统不可用；要想实现完美的安全本身是很难的，也是非常耗费资源的。实际上我们不需要完美的安全，我们往往只需要提升攻击者的攻击成本，使其大于收益即可。比如我们学到的ASLR、Salting等策略。   <img src="CSE期末复习笔记.assets/image-20211230164111516.png" alt="image-20211230164111516" style="zoom:50%;" />
 
 ## Database management system and Data model
 
@@ -386,7 +391,9 @@ point query（点查询），index的访问相对随机，顶层节点被访问�
 
 ### Link Layer
 
-<img src="CSE期末复习笔记.assets/image-20211222101539096.png" alt="image-20211222101539096" style="zoom:50%;" />
+
+
+<img src="CSE期末复习笔记.assets/image-20211222101539096.png" alt="image-20211222101539096" style="zoom:50%;" />![image-20211230090339676](CSE期末复习笔记.assets/image-20211230090339676.png)
 
 + 必须要等收到ack才能发下一条数据，至少为2△t
 
@@ -485,6 +492,8 @@ point query（点查询），index的访问相对随机，顶层节点被访问�
 
 <img src="CSE期末复习笔记.assets/image-20211222110956564.png" alt="image-20211222110956564" style="zoom:50%;" />
 
+![image-20211230093023439](CSE期末复习笔记.assets/image-20211230093023439.png)
+
 <img src="CSE期末复习笔记.assets/image-20211222111353133.png" alt="image-20211222111353133" style="zoom:50%;" />
 
 <img src="CSE期末复习笔记.assets/image-20211222111702985.png" alt="image-20211222111702985" style="zoom:50%;" />
@@ -509,6 +518,8 @@ A是从B认识的C 所以没有必要把C发给B
 | **Distance Vector** | Low overhead: 2x #Line advertisements | Convergence time is proportional to longest path; The infinity problem | **Only good for small networks** |
 
 <img src="CSE期末复习笔记.assets/image-20211222124422038.png" alt="image-20211222124422038" style="zoom:50%;" />
+
+![image-20211230093320760](CSE期末复习笔记.assets/image-20211230093320760.png)
 
 ### Path Vector
 
@@ -546,6 +557,8 @@ A是从B认识的C 所以没有必要把C发给B
 
 这样可以减少forwarding table的entry的数量，节省空间。同时减少advertisement的大小。
 
+![image-20211230094128050](CSE期末复习笔记.assets/image-20211230094128050.png)
+
 ### Forwarding an IP Packet
 
 <img src="CSE期末复习笔记.assets/image-20211222133459664.png" alt="image-20211222133459664" style="zoom:50%;" />
@@ -553,6 +566,8 @@ A是从B认识的C 所以没有必要把C发给B
 不可以通过网卡发给自己，通过网卡的话就只能往外发。
 
 <img src="CSE期末复习笔记.assets/image-20211222132633101.png" alt="image-20211222132633101" style="zoom:50%;" />
+
+TTL = 64 就是这个包最多被 64 个人转发，为什么要这样呢？防止不小心出现了 loop， 这样包就一直占用着资源。还要更新 header checksum。因为我们 TTL 改了，checksum 也要 该，这就是一个写操作。整个这个操作，Linux kernel 提供了一个很好的转发机制，但是它不够快。
 
 <img src="CSE期末复习笔记.assets/image-20211222132741783.png" alt="image-20211222132741783" style="zoom:50%;" />
 
@@ -631,6 +646,8 @@ ARP广泛使用，很难更新，很难处理上述的问题。
 <img src="CSE期末复习笔记.assets/image-20211223212706647.png" alt="image-20211223212706647" style="zoom:50%;" />
 
 <img src="CSE期末复习笔记.assets/image-20211223211557029.png" alt="image-20211223211557029" style="zoom:50%;" />
+
+![image-20211230125501030](CSE期末复习笔记.assets/image-20211230125501030.png)
 
 ### At least once
 
@@ -774,6 +791,10 @@ Receiver Sender相互制约。
 ![image-20211224205038101](CSE期末复习笔记.assets/image-20211224205038101.png)
 
 一个更大的buffer并不能解决问题，反而可能会让问题更糟。
+
+<img src="CSE期末复习笔记.assets/image-20211230131643990.png" alt="image-20211230131643990" style="zoom:50%;" />
+
+<img src="CSE期末复习笔记.assets/image-20211230131750219.png" alt="image-20211230131750219" style="zoom:50%;" />
 
 #### 修改Window Size
 
@@ -1028,11 +1049,11 @@ K30 分给 N36 N25的successor转而指向N36
 
 ![image-20211226153516447](CSE期末复习笔记.assets/image-20211226153516447.png)
 
-![image-20211226153541895](CSE期末复习笔记.assets/image-20211226153541895.png)
+<img src="CSE期末复习笔记.assets/image-20211226153541895.png" alt="image-20211226153541895" style="zoom: 50%;" />
 
 只有最长的链才会“赢”
 
-![image-20211226154505797](CSE期末复习笔记.assets/image-20211226154505797.png)
+<img src="CSE期末复习笔记.assets/image-20211226154505797.png" alt="image-20211226154505797" style="zoom: 80%;" />
 
 只要修改一个就会导致后面的全部都需要修改，仿佛多米诺骨牌一般，这就大大加大了篡改的难度。
 
@@ -1090,6 +1111,8 @@ K30 分给 N36 N25的successor转而指向N36
 **Social** **engineering** **attack** 
 
 **Side-channel attack**
+
+<img src="CSE期末复习笔记.assets/image-20211230162358260.png" alt="image-20211230162358260" style="zoom:50%;" />
 
 安全是一个negative goal，对于positive goal，比如我是否能够读某个文件是很容易的，只需判定权限即可；而对于某人不能读取某个文件这样的negative goal是很难的，因为绕过authentic读取文件的方法是无穷无尽的，只有我们想不到，没有hacker们做不到。
 
@@ -1750,3 +1773,4 @@ A：我们暂时还不能断掉Intel。
 对于阿里云/Amazon来说。华为云用的是华为芯片怎么办呢？这个问题目前还没有什么很好的方案。
 
 数据安全是一个不断演进的过程。
+
